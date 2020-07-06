@@ -140,6 +140,7 @@ RUN ldconfig
 RUN apt-get install -y nano
 
 # Clone repos
+WORKDIR /
 RUN git clone https://github.com/TemporalAgent7/datacorebot.git
 RUN git clone https://github.com/TemporalAgent7/datacore-bot.git
 RUN git clone https://github.com/TemporalAgent7/datacore.git
