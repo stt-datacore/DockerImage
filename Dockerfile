@@ -1,5 +1,11 @@
 FROM ubuntu:18.04
 
+# README FIRST!!!
+# If you need to make changes to this image, please place them below the OpenCV build
+# unless they are required to build OpenCV.
+# This is because the OpenCV build is really time consuming, but will remain cached
+# if changes are made after it, but not if they are made before.
+
 # Based on https://github.com/shimat/opencvsharp/blob/master/docker/ubuntu.18.04-x64/Dockerfile
 # and https://www.learnopencv.com/install-opencv-4-on-ubuntu-18-04/
 ENV OPENCV_VERSION=4.3.0
@@ -90,6 +96,9 @@ RUN cd opencv && mkdir build && cd build && \
     -D OPENCV_ENABLE_NONFREE=ON \
     .. && make -j$(nproc) && make install && ldconfig
 # Usually -j4 on the above line, but hopefully this will use all available CPU cores
+######################################################################################
+# Finished the really slow bit
+######################################################################################
 
 WORKDIR /
 
@@ -97,8 +106,32 @@ WORKDIR /
 # This section based on https://docs.microsoft.com/en-us/dotnet/core/install/linux-ubuntu#1804-
 RUN wget https://packages.microsoft.com/config/ubuntu/18.04/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
 RUN dpkg -i packages-microsoft-prod.deb
+RUN rm packages-microsoft-prod.deb
 
 RUN apt-get update
 RUN apt-get install -y dotnet-sdk-2.2 aspnetcore-runtime-2.2
 
+# Install deps for datacore
+RUN apt-get install -y libtesseract-dev npm
 
+# Clone repos
+RUN git clone https://github.com/TemporalAgent7/datacorebot.git
+RUN git clone https://github.com/TemporalAgent7/datacore-bot.git
+RUN git clone https://github.com/TemporalAgent7/datacore.git
+RUN git clone https://github.com/TemporalAgent7/asset-server.git
+RUN git clone https://github.com/TemporalAgent7/site-server.git
+
+# Build datacore-bot
+WORKDIR /datacore-bot
+RUN dotnet restore
+RUN dotnet build
+WORKDIR /
+
+# Build asset parser
+WORKDIR /asset-server
+RUN npm install
+# Let it know we don't have anything already downloaded
+RUN rm /asset-server/out/data/latestVersion.txt
+RUN touch /asset-server/out/data/latestVersion.txt
+
+WORKDIR /
