@@ -146,10 +146,6 @@ RUN git clone https://github.com/TemporalAgent7/datacore.git
 RUN git clone https://github.com/TemporalAgent7/asset-server.git
 RUN git clone https://github.com/TemporalAgent7/site-server.git
 
-# Link some libraries into silly places - this needs work
-RUN ln -s /usr/local/lib/libtesseract.so.3.0.5 /datacore-bot/src/DataCore.Daemon/bin/Debug/netcoreapp2.2/x64/libtesseract3052.so
-RUN ln -s /usr/local/lib/libleptonica.so.1.75.3 /datacore-bot/src/DataCore.Daemon/bin/Debug/netcoreapp2.2/x64/liblept1753.so
-
 # Build datacore-bot
 WORKDIR /datacore-bot
 RUN dotnet restore
@@ -164,6 +160,10 @@ RUN rm /asset-server/out/data/latestVersion.txt
 RUN touch /asset-server/out/data/latestVersion.txt
 
 WORKDIR /
+
+# Link some libraries into silly places - this needs work
+RUN ln -s /usr/local/lib/libtesseract.so.3.0.5 /datacore-bot/src/DataCore.Daemon/bin/Debug/netcoreapp2.2/x64/libtesseract3052.so
+RUN ln -s /usr/local/lib/libleptonica.so.1.75.3 /datacore-bot/src/DataCore.Daemon/bin/Debug/netcoreapp2.2/x64/liblept1753.so
 
 # Testing for a config dir:
 RUN mkdir -p /data/config
