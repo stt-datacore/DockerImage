@@ -114,12 +114,41 @@ RUN apt-get install -y dotnet-sdk-2.2 aspnetcore-runtime-2.2
 # Install deps for datacore
 RUN apt-get install -y libtesseract-dev npm
 
+# Build Leptonica
+WORKDIR /
+RUN git clone https://github.com/DanBloomberg/leptonica.git
+WORKDIR /leptonica
+RUN git checkout 1.75.3
+RUN mkdir build
+WORKDIR /leptonica/build
+RUN cmake ..
+RUN make -j$(nproc)
+RUN make install
+
+# Build Tesseract
+WORKDIR /
+RUN git clone https://github.com/tesseract-ocr/tesseract.git
+WORKDIR /tesseract
+RUN git checkout 3.05
+RUN ./autogen.sh
+RUN ./configure
+RUN make -j$(nproc)
+RUN make install
+RUN ldconfig
+
+# Install other useful tools
+RUN apt-get install -y nano
+
 # Clone repos
 RUN git clone https://github.com/TemporalAgent7/datacorebot.git
 RUN git clone https://github.com/TemporalAgent7/datacore-bot.git
 RUN git clone https://github.com/TemporalAgent7/datacore.git
 RUN git clone https://github.com/TemporalAgent7/asset-server.git
 RUN git clone https://github.com/TemporalAgent7/site-server.git
+
+# Link some libraries into silly places - this needs work
+RUN ln -s /usr/local/lib/libtesseract.so.3.0.5 /datacore-bot/src/DataCore.Daemon/bin/Debug/netcoreapp2.2/x64/libtesseract3052.so
+RUN ln -s /usr/local/lib/libleptonica.so.1.75.3 /datacore-bot/src/DataCore.Daemon/bin/Debug/netcoreapp2.2/x64/liblept1753.so
 
 # Build datacore-bot
 WORKDIR /datacore-bot
@@ -135,3 +164,8 @@ RUN rm /asset-server/out/data/latestVersion.txt
 RUN touch /asset-server/out/data/latestVersion.txt
 
 WORKDIR /
+
+# Testing for a config dir:
+RUN mkdir -p /data/config
+RUN touch /data/config/test1.txt
+RUN touch /data/config/test2.txt
