@@ -166,7 +166,24 @@ WORKDIR /
 RUN ln -s /usr/local/lib/libtesseract.so.3.0.5 /datacore-bot/src/DataCore.Daemon/bin/Debug/netcoreapp2.2/x64/libtesseract3052.so
 RUN ln -s /usr/local/lib/libleptonica.so.1.75.3 /datacore-bot/src/DataCore.Daemon/bin/Debug/netcoreapp2.2/x64/liblept1753.so
 
-# Testing for a config dir:
+# Create config Dir
 RUN mkdir -p /data/config
-RUN touch /data/config/test1.txt
-RUN touch /data/config/test2.txt
+
+# Create blank config Dir (contains source files for user to fill)
+RUN mkdir -p /dataorig/asset-server
+RUN touch /dataorig/runcomplete
+
+# Trained behold data goes here
+RUN mkdir /data/traindata
+RUN rm -rf /datacore-bot/data/traindata
+RUN ln -s /data/traindata /datacore-bot/data/traindata
+
+# Asset server data goes here
+RUN mkdir /data/asset-server
+RUN mv /asset-server/out/* /dataorig/asset-server/
+RUN rm -rf /asset-server/out
+RUN ln -s /data/asset-server /asset-server/out
+
+ADD ./firstrun.sh /firstrun.sh
+RUN chmod +x /firstrun.sh
+CMD /firstrun.sh
