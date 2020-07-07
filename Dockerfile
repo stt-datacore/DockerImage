@@ -137,18 +137,18 @@ RUN make install
 RUN ldconfig
 
 # Install other useful tools
-RUN apt-get install -y nano
+RUN apt-get install -y nano cron
 
 # Clone repos
 WORKDIR /
-RUN git clone https://github.com/TemporalAgent7/datacorebot.git
-RUN git clone https://github.com/TemporalAgent7/datacore-bot.git
-RUN git clone https://github.com/TemporalAgent7/datacore.git
-RUN git clone https://github.com/TemporalAgent7/asset-server.git
-RUN git clone https://github.com/TemporalAgent7/site-server.git
+RUN git clone https://github.com/stt-datacore/website.git
+RUN git clone https://github.com/stt-datacore/image-analysis.git
+RUN git clone https://github.com/stt-datacore/bot.git
+RUN git clone https://github.com/stt-datacore/asset-server.git
+RUN git clone https://github.com/stt-datacore/site-server.git
 
 # Build datacore-bot
-WORKDIR /datacore-bot
+WORKDIR /image-analysis
 RUN dotnet restore
 RUN dotnet build
 WORKDIR /
@@ -163,8 +163,8 @@ RUN touch /asset-server/out/data/latestVersion.txt
 WORKDIR /
 
 # Link some libraries into silly places - this needs work
-RUN ln -s /usr/local/lib/libtesseract.so.3.0.5 /datacore-bot/src/DataCore.Daemon/bin/Debug/netcoreapp2.2/x64/libtesseract3052.so
-RUN ln -s /usr/local/lib/libleptonica.so.1.75.3 /datacore-bot/src/DataCore.Daemon/bin/Debug/netcoreapp2.2/x64/liblept1753.so
+RUN ln -s /usr/local/lib/libtesseract.so.3.0.5 /image-analysis/src/DataCore.Daemon/bin/Debug/netcoreapp2.2/x64/libtesseract3052.so
+RUN ln -s /usr/local/lib/libleptonica.so.1.75.3 /image-analysis/src/DataCore.Daemon/bin/Debug/netcoreapp2.2/x64/liblept1753.so
 
 # Create config Dir
 RUN mkdir -p /data/config
@@ -175,8 +175,8 @@ RUN touch /dataorig/runcomplete
 
 # Trained behold data goes here
 RUN mkdir /data/traindata
-RUN rm -rf /datacore-bot/data/traindata
-RUN ln -s /data/traindata /datacore-bot/data/traindata
+RUN rm -rf /image-analysis/data/traindata
+RUN ln -s /data/traindata /image-analysis/data/traindata
 
 # Asset server data goes here
 RUN mkdir /data/asset-server
