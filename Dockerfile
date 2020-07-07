@@ -140,7 +140,7 @@ RUN ldconfig
 RUN apt-get install -y nano cron
 
 # copy blank config into container
-ADD dataorig /
+ADD dataorig /dataorig/
 
 # Update npm and install pm2
 RUN npm install -g n pm2
