@@ -142,6 +142,10 @@ RUN apt-get install -y nano cron
 # copy blank config into container
 ADD dataorig /
 
+# Update npm and install pm2
+RUN npm install -g n pm2
+RUN n latest
+
 # Clone repos
 WORKDIR /
 RUN git clone https://github.com/stt-datacore/website.git
@@ -162,6 +166,11 @@ RUN npm install
 # Let it know we don't have anything already downloaded
 RUN rm /asset-server/out/data/latestVersion.txt
 RUN touch /asset-server/out/data/latestVersion.txt
+
+# Build bot
+WORKDIR /bot
+RUN npm install
+RUN ln -s /data/config/env /bot/.env
 
 WORKDIR /
 
