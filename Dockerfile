@@ -140,14 +140,14 @@ RUN ldconfig
 RUN apt-get install -y nano cron
 
 # Clone repos
-WORKDIR /
+WORKDIR / #1137
 RUN git clone https://github.com/stt-datacore/website.git
 RUN git clone https://github.com/stt-datacore/image-analysis.git
 RUN git clone https://github.com/stt-datacore/bot.git
 RUN git clone https://github.com/stt-datacore/asset-server.git
 RUN git clone https://github.com/stt-datacore/site-server.git
 
-# Build datacore-bot
+# Build image-analysis
 WORKDIR /image-analysis
 RUN dotnet restore
 RUN dotnet build

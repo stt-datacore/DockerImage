@@ -1,0 +1,6 @@
+BOT_TOKEN=<YOURDISCORDTOKEN>
+DC_DATA_PATH=/website/static/structured/
+PROFILE_DATA_PATH=/site-server/static/
+IMGFLIP_USERNAME=
+IMGFLIP_PASSWORD=
+DB_CONNECTION_STRING=sqlite::/data/profiles.sqlite
