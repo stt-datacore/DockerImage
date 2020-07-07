@@ -150,8 +150,10 @@ RUN ln -s /data/config/nginx.conf /etc/nginx/nginx.conf
 ADD dataorig /dataorig/
 
 # Update npm and install pm2
-RUN npm install -g n pm2
+RUN npm install -g n
 RUN n latest
+RUN PATH="$PATH"
+RUN npm install -g pm2
 
 # Clone repos
 WORKDIR /
