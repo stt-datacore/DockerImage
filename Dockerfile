@@ -149,12 +149,6 @@ RUN ln -s /data/config/nginx.conf /etc/nginx/nginx.conf
 # copy blank config into container
 ADD dataorig /dataorig/
 
-# Update npm and install pm2
-RUN npm install -g n
-RUN n latest
-RUN PATH="$PATH"
-RUN npm install -g pm2
-
 # Clone repos
 WORKDIR /
 RUN git clone https://github.com/stt-datacore/website.git
@@ -163,19 +157,25 @@ RUN git clone https://github.com/stt-datacore/bot.git
 RUN git clone https://github.com/stt-datacore/asset-server.git
 RUN git clone https://github.com/stt-datacore/site-server.git
 
-# Build image-analysis
-WORKDIR /image-analysis
-RUN dotnet restore
-RUN dotnet build
-WORKDIR /
-RUN ln -s /data/config/img-analysis-settings.json /image-analysis/src/DataCore.Daemon/appsettings.json
-
 # Build asset parser
 WORKDIR /asset-server
 RUN npm install
 # Let it know we don't have anything already downloaded
 RUN rm /asset-server/out/data/latestVersion.txt
 RUN touch /asset-server/out/data/latestVersion.txt
+
+# Update npm and install pm2
+RUN npm install -g n
+RUN n latest
+ENV PATH="${PATH}"
+RUN npm install -g pm2
+
+# Build image-analysis
+WORKDIR /image-analysis
+RUN dotnet restore
+RUN dotnet build
+WORKDIR /
+RUN ln -s /data/config/img-analysis-settings.json /image-analysis/src/DataCore.Daemon/appsettings.json
 
 # Build bot
 WORKDIR /bot
