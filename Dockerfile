@@ -139,8 +139,11 @@ RUN ldconfig
 # Install other useful tools
 RUN apt-get install -y nano cron
 
+# copy blank config into container
+ADD dataorig /
+
 # Clone repos
-WORKDIR / #1137
+WORKDIR /
 RUN git clone https://github.com/stt-datacore/website.git
 RUN git clone https://github.com/stt-datacore/image-analysis.git
 RUN git clone https://github.com/stt-datacore/bot.git
