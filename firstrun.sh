@@ -4,7 +4,7 @@ if [ -f "$FILE" ]; then
     echo "First run already performed"
 else
     echo "Performing first run now"
-    cp -r /dataorig/. /data/
+    cp -rn /dataorig/. /data/
     cd /datacore-bot/src/DataCore.CLI/
     echo "Training behold images"
     dotnet run train

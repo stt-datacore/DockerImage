@@ -137,7 +137,14 @@ RUN make install
 RUN ldconfig
 
 # Install other useful tools
-RUN apt-get install -y nano cron
+RUN apt-get install -y nano cron dialog net-tools
+
+# Install nginx
+EXPOSE 80
+EXPOSE 443
+RUN apt-get install -y nginx
+RUN rm -v /etc/nginx/nginx.conf
+RUN ln -s /data/config/nginx.conf /etc/nginx/nginx.conf
 
 # copy blank config into container
 ADD dataorig /dataorig/
@@ -159,6 +166,7 @@ WORKDIR /image-analysis
 RUN dotnet restore
 RUN dotnet build
 WORKDIR /
+RUN ln -s /data/config/img-analysis-settings.json /image-analysis/src/DataCore.Daemon/appsettings.json
 
 # Build asset parser
 WORKDIR /asset-server
@@ -177,6 +185,8 @@ WORKDIR /
 # Link some libraries into silly places - this needs work
 RUN ln -s /usr/local/lib/libtesseract.so.3.0.5 /image-analysis/src/DataCore.Daemon/bin/Debug/netcoreapp2.2/x64/libtesseract3052.so
 RUN ln -s /usr/local/lib/libleptonica.so.1.75.3 /image-analysis/src/DataCore.Daemon/bin/Debug/netcoreapp2.2/x64/liblept1753.so
+RUN ln -s /usr/local/lib/libtesseract.so.3.0.5 /image-analysis/src/DataCore.CLI/bin/Debug/netcoreapp2.2/x64/libtesseract3052.so
+RUN ln -s /usr/local/lib/libleptonica.so.1.75.3 /image-analysis/src/DataCore.CLI/bin/Debug/netcoreapp2.2/x64/liblept1753.so
 
 # Create config Dir
 RUN mkdir -p /data/config
