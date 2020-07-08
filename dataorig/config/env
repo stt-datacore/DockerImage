@@ -4,3 +4,5 @@ PROFILE_DATA_PATH=/site-server/static/
 IMGFLIP_USERNAME=
 IMGFLIP_PASSWORD=
 DB_CONNECTION_STRING=sqlite::/data/profiles.sqlite
+DATACORE_URL=https://<YOURSERVERNAME>/
+ASSETS_URL=https://<YOURSERVERNAME>/assets/
