@@ -59,6 +59,12 @@ then
     ln -s /data/config/env /site-server/.env
 fi
 
+if [ ! -d /data/profiles ]
+then
+    echo "Creating a folder to store profiles in, as you don't seem to have one"
+    mkdir /data/profiles
+fi
+
 if [ ! -d /site-server/static ]
 then
     ln -s /data/profiles /site-server/static
