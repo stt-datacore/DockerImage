@@ -130,16 +130,8 @@ then
     mkdir /data/train
 fi
 
-if [ ! -L /cpp-image-analysis/train ]
-then
-    echo "Linking training data to host"
-    rm -rf /cpp-image-analysis/train
-    ln -s /data/train /cpp-image-analysis/train
-fi
-
 echo "Starting image analysis server.  Training will take some time before analysis can take place"
 cd /cpp-image-analysis/build
-pm2 start "./imserver -t../ -j/website/static/structured/ -ahttps://mckennas.org.uk/assets/" --name "imageAnalysis"
-
+pm2 start "./imserver --jsonpath=/website/static/structured/ --trainpath=/data/train/ --datapath=/cpp-image-analysis/data/ --asseturl=https://assets.datacore.app/" --name "imageAnalysis"
 
 pm2 logs
