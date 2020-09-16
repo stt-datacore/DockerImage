@@ -54,6 +54,7 @@ RUN git clone https://github.com/stt-datacore/site-server.git
 # Build asset parser
 WORKDIR /asset-server
 RUN npm install
+RUN npm run build
 
 # Build image-analysis
 #WORKDIR /image-analysis
