@@ -103,6 +103,12 @@ then
     ln -s /data/asset-server /asset-server/out
 fi
 
+if [ ! -L /asset-server/build/out ]
+then
+    echo "Linking asset server in"
+    ln -s /data/asset-server /asset-server/build/out
+fi
+
 echo "Downloading assets. This will take a couple of hours on the first run"
 /asset-server/exec.sh
 
