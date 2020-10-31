@@ -1,0 +1,8 @@
+{
+	"guilds": {
+		"default": {
+			"prefixes": ["-d"],
+			"mentionPrefix": true
+		}
+	}
+}

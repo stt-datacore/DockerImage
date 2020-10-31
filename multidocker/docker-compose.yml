@@ -1,0 +1,122 @@
+version: '3'
+services:
+    watchtower:
+        image: containrrr/watchtower
+        container_name: Watchtower
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+        command: --interval 30
+
+    nginx:
+        image: nginx:alpine
+        container_name: NginxServer
+        network_mode: "host"
+        restart: unless-stopped
+        volumes:
+            - "${DATA_ROOT}/sitebuild:/sitebuild:ro"
+            - "${DATA_ROOT}/nginx-sites:/etc/nginx/conf.d:ro"
+            - "${DATA_ROOT}:/data:ro"
+            - "${DATA_ROOT}/logs/nginx:/var/log/nginx:rw"
+        depends_on:
+            - asset-server
+            - site-server
+
+    node_exporter:
+        image: prom/node-exporter
+        container_name: node_exporter
+        ports:
+            - "9100:9100"
+
+    prometheus:
+        image: prom/prometheus:latest
+        container_name: prometheus
+        ports:
+            - "9090:9090"
+        command:
+            - --config.file=/etc/prometheus/prometheus.yml
+        volumes:
+            - "${DATA_ROOT}/prometheus.yml:/etc/prometheus/prometheus.yml:ro"
+        depends_on:
+            - cadvisor
+
+    cadvisor:
+        image: gcr.io/google-containers/cadvisor:latest
+        container_name: cadvisor
+        restart: unless-stopped
+        ports:
+            - "8080:8080"
+        volumes:
+            - "/:/rootfs:ro"
+            - "/var/run:/var/run:rw"
+            - "/sys:/sys:ro"
+            - "/var/lib/docker/:/var/lib/docker:ro"
+        command:
+            - "--housekeeping_interval=30s"
+            - "--docker_only"
+            - "--disable_metrics=disk,network,tcp,udp,percpu,sched,process"
+
+    RSyncHost:
+        image: hermsi/alpine-sshd
+        container_name: RSyncHost
+        restart: unless-stopped
+        ports:
+            - "1337:22"
+        volumes:
+            - "${DATA_ROOT}/sitebuild:/sitebuild:rw"
+        environment:
+            - ROOT_PASSWORD=${RSYNC_PASSWORD}
+
+    cpp-image-analysis :
+        image: ghcr.io/stt-datacore/cpp-image-analysis:latest
+        container_name: DCImageAnalysis 
+        restart: unless-stopped
+        ports:
+            - "5000:5000"
+        volumes:
+            - "${DATA_ROOT}/sitebuild:/sitebuild:ro"
+            - "${DATA_ROOT}/cvdata:/cdvdata:ro"
+            - "${DATA_ROOT}/traindata:/traindata:rw"
+        command: --asseturl=${ASSETS_URL} --trainpath=/traindata/ --datapath=/cdvdata/ --jsonpath=/sitebuild/structured/
+
+    asset-server :
+        image: ghcr.io/stt-datacore/asset-server:latest
+        container_name: DCAssetServer 
+        restart: unless-stopped
+        volumes:
+            - "${DATA_ROOT}:/data:rw"
+        environment:
+            - OUT_PATH=/data/assets/
+        env_file: ${DATA_ROOT}/env.list
+
+    site-server :
+        image: ghcr.io/stt-datacore/site-server:latest
+        container_name: DCSiteServer 
+        restart: unless-stopped
+        ports:
+            - "4420:4420"
+        volumes:
+            - "${DATA_ROOT}:/data:rw"
+        environment:
+            - PROFILE_DATA_PATH=/data/profiles
+            - DB_CONNECTION_STRING=sqlite:/data/datacore.db
+            - LOG_PATH=/data/logs/
+        env_file: ${DATA_ROOT}/env.list
+
+    bot :
+        image: ghcr.io/stt-datacore/bot:latest
+        container_name: DCBot 
+        restart: unless-stopped
+        network_mode: "host" # Is this needed?
+        volumes:
+            - "${DATA_ROOT}:/data:rw"
+            - "${DATA_ROOT}/sitebuild:/sitebuild:ro"
+        environment:
+            - PROFILE_DATA_PATH=/data/profiles
+            - DB_CONNECTION_STRING=sqlite:/data/datacore.db
+            - LOG_PATH=/data/logs/
+            - DC_DATA_PATH=/sitebuild/structured
+            - CONFIG_PATH=/data/bot_config.json
+        env_file: ${DATA_ROOT}/env.list
+        depends_on:
+            - cpp-image-analysis
+

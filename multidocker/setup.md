@@ -1,0 +1,1 @@
+Copy cert.pem and privkey.pem here, and fill in the information in .env and env.list
