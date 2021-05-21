@@ -24,6 +24,8 @@ RUN apt-get update && DEBIAN_FRONTEND="noninteractive" apt-get install -y \
     openssl \
     libssl-dev
 
+RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 10
+
 RUN curl -sL https://deb.nodesource.com/setup_14.x | bash -
 RUN apt-get install -y nodejs
 
