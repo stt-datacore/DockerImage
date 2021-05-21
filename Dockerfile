@@ -18,7 +18,6 @@ RUN apt-get update && DEBIAN_FRONTEND="noninteractive" apt-get install -y \
     dialog \
     net-tools \
     nginx \
-    npm \
     libboost-all-dev \
     libopencv-dev \
     libtesseract-dev \
