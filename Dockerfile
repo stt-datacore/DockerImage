@@ -25,6 +25,8 @@ RUN apt-get update && DEBIAN_FRONTEND="noninteractive" apt-get install -y \
     openssl \
     libssl-dev
 
+RUN curl -sL https://deb.nodesource.com/setup_14.x | sudo bash -
+RUN apt-get install -y nodejs
 
 WORKDIR /
 
