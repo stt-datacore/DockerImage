@@ -18,13 +18,14 @@ RUN apt-get update && DEBIAN_FRONTEND="noninteractive" apt-get install -y \
     dialog \
     net-tools \
     nginx \
-    npm \
     libboost-all-dev \
     libopencv-dev \
     libtesseract-dev \
     openssl \
     libssl-dev
 
+RUN curl -sL https://deb.nodesource.com/setup_14.x | sudo bash -
+RUN apt-get install -y nodejs
 
 WORKDIR /
 
