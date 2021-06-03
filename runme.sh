@@ -158,6 +158,6 @@ fi
 
 echo "Starting image analysis server.  Training will take some time before analysis can take place"
 cd /cpp-image-analysis/build
-pm2 start "./imserver --jsonpath=/website/static/structured/ --trainpath=/data/train/ --datapath=/cpp-image-analysis/data/ --asseturl=https://assets.datacore.app/" --name "imageAnalysis"
+pm2 start "./imserver --jsonpath=/website/public_web/structured/ --trainpath=/data/train/ --datapath=/cpp-image-analysis/data/ --asseturl=https://assets.datacore.app/" --name "imageAnalysis"
 
 pm2 logs
