@@ -108,9 +108,9 @@ services:
             - "80:80"
             - "442:442"
         volumes:
-            - sitebuild:/sitebuild:rw
-            - assets:/sitebuild/assets:ro
-            - profiles:/sitebuild/profiles:ro
+            - sitebuild:/sitebuild:ro
+            - assets:/assets:ro
+            - profiles:/profiles:ro
             - ./nginx-sites/${NGINX_CONF}:/etc/nginx/conf.d/default.conf:rw
             - nginx-logs:/var/log/nginx:rw
             
