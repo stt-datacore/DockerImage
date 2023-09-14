@@ -2,8 +2,10 @@ version: '3'
 volumes:
     sitebuild:
     assets:
-    nginx-logs:
     profiles:
+    traindata:
+    nginx-logs:
+    site-logs:
 
 services:
     gittower:
@@ -22,7 +24,8 @@ services:
         build:
             context: https://github.com/stt-datacore/website.git#${WEBSITE_BRANCH}
             dockerfile_inline: |
-                FROM node:16
+                FROM node:16-alpine
+                RUN apk add build-base python3 git
                 WORKDIR /app
                 # Sentry requires the github sha
                 RUN git clone https://github.com/stt-datacore/website.git .git --bare --depth 1
@@ -32,6 +35,7 @@ services:
                 CMD yarn run build
         environment:
             - GATSBY_ASSETS_URL=${ASSETS_URL}
+            - GATSBY_DATACORE_URL=${DATACORE_URL}
         deploy:
             restart_policy: 
                 condition: on-failure
@@ -45,19 +49,23 @@ services:
         build:
             context: https://github.com/stt-datacore/asset-server.git#${ASSET_BRANCH}
             dockerfile_inline: |
-                FROM alpine:latest
+                FROM node:16-alpine
+                RUN apk add bash python3 build-base
                 RUN mkdir /app
                 WORKDIR /app
                 RUN echo */30 * * * * /app/exec.sh > crontab
                 RUN crontab ./crontab
                 COPY . .
-                CMD exec.sh && crond -f -l 8
+                RUN npm install
+                RUN npm run build
+                CMD ./exec.sh && crond -f -l 8
         container_name: DCAssetServer 
         deploy:
             restart_policy: 
                 condition: on-failure
         volumes:
             - assets:/assets:rw"
+
         environment:
             - OUT_PATH=/assets/
         profiles: [ "all", "asset-server", "fullstack"]
@@ -65,6 +73,15 @@ services:
     site-server:
         build:
             context: https://github.com/stt-datacore/site-server.git#${SERVER_BRANCH}
+            dockerfile_inline: |
+                FROM keymetrics/pm2:latest-alpine
+                RUN apk add python3 python2 build-base sqlite
+                RUN mkdir /app
+                WORKDIR /app
+                COPY . .
+                RUN npm install
+                RUN npm run build
+                CMD pm2-runtime --name server start npm -- start
         container_name: DCSiteServer 
         deploy:
             restart_policy: 
@@ -72,28 +89,36 @@ services:
         ports:
             - "4420:4420"
         volumes:
-            - "${DATA_ROOT}:/data:rw"
+            - site-logs:/data/logs:rw
+            - profiles:/data/profiles:rw"
+            - ./datacore.db:/database
         environment:
             - PROFILE_DATA_PATH=/data/profiles
-            - DB_CONNECTION_STRING=sqlite:/data/datacore.db
+            - DB_CONNECTION_STRING=sqlite:/database
             - LOG_PATH=/data/logs/
-        env_file: ${DATA_ROOT}/env.list
         profiles: ["all", "site-server", "fullstack"]
 
     nginx:
-        image: nginx
+        image: nginx:alpine
         container_name: NginxServer
         deploy:
-            restart_policy: 
+            restart_policy:
                 condition: on-failure
-        #network_mode: host
         ports:
-            - 80:80
+            - "80:80"
+            - "442:442"
         volumes:
-            - sitebuild:/usr/share/nginx/html
-            - assets:/usr/share/nginx/html/assets
+            - sitebuild:/sitebuild:rw
+            - assets:/sitebuild/assets:ro
+            - profiles:/sitebuild/profiles:ro
+            - ./nginx-sites/${NGINX_CONF}:/etc/nginx/conf.d/default.conf:rw
+            - nginx-logs:/var/log/nginx:rw
             
-        profiles: ["all", "website", "asset-server", "site-server", "fullstack"]
+        depends_on:
+            - website
+            - asset-server
+            - site-server
+        profiles: [ "all", "website", "asset-server", "site-server", "fullstack" ]
 
     node_exporter:
         image: prom/node-exporter
@@ -110,7 +135,7 @@ services:
         command:
             - --config.file=/etc/prometheus/prometheus.yml
         volumes:
-            - "${DATA_ROOT}/prometheus.yml:/etc/prometheus/prometheus.yml:ro"
+            - "./prometheus.yml:/etc/prometheus/prometheus.yml:ro"
         depends_on:
             - cadvisor
         profiles: [ "all", "monitoring" ]
@@ -134,7 +159,7 @@ services:
             - "--disable_metrics=disk,network,tcp,udp,percpu,sched,process"
         profiles: [ "all", "monitoring" ]
 
-    RSyncHost:
+    rsync-host:
         image: hermsi/alpine-sshd
         container_name: RSyncHost
         deploy:
@@ -143,7 +168,13 @@ services:
         ports:
             - "1337:22"
         volumes:
-            - "${DATA_ROOT}/sitebuild:/sitebuild:rw"
+            - "sitebuild:/data/sitebuild:rw"
+            - "assets:/data/assets:rw"
+            - "profiles:/data/profiles:rw"
+            - "traindata:/data/traindata:rw"
+            - "nginx-logs:/logs/nginx:ro"
+            - "site-logs:/logs/site-server:ro"
+
         environment:
             - ROOT_PASSWORD=${RSYNC_PASSWORD}
         profiles: [ "all", "rsync", "fullstack" ]
@@ -157,9 +188,9 @@ services:
         ports:
             - "5000:5000"
         volumes:
-            - "${DATA_ROOT}/sitebuild:/sitebuild:ro"
-            - "${DATA_ROOT}/cvdata:/cdvdata:ro"
-            - "${DATA_ROOT}/traindata:/traindata:rw"
+            - "sitebuild:/sitebuild:ro"
+            - "./cvdata:/cdvdata:ro"
+            - "traindata:/traindata:rw"
         command: --asseturl=${ASSETS_URL} --trainpath=/traindata/ --datapath=/cdvdata/ --jsonpath=/sitebuild/structured/
         profiles: [ "all", "bot" ]
 
@@ -171,15 +202,14 @@ services:
                 condition: on-failure
         network_mode: "host" # Is this needed?
         volumes:
-            - "${DATA_ROOT}:/data:rw"
-            - "${DATA_ROOT}/sitebuild:/sitebuild:ro"
+            - ".:/data:rw"
+            - "sitebuild:/sitebuild:ro"
         environment:
             - PROFILE_DATA_PATH=/data/profiles
             - DB_CONNECTION_STRING=sqlite:/data/datacore.db
             - LOG_PATH=/data/logs/
             - DC_DATA_PATH=/sitebuild/structured
             - CONFIG_PATH=/data/bot_config.json
-        env_file: ${DATA_ROOT}/env.list
         depends_on:
             - cpp-image-analysis
         profiles: ["all", "bot"]
