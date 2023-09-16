@@ -11,8 +11,10 @@ volumes:
 services:
     gittower:
         image: datacore/gittower
-        build: contexts/gittower
-        command: watch website https://github.com/stt-datacore/website.git ${WEBSITE_BRANCH} && gittower
+        build: 
+            context: contexts/gittower
+            args:
+                ALPINE_VERSION:
         deploy:
             restart_policy: 
                 condition: on-failure
@@ -42,15 +44,15 @@ services:
                 ALPINE_VERSION:
                 NODE_VERSION:                
         environment:
-            - GATSBY_ASSETS_URL=${ASSETS_URL}
-            - GATSBY_DATACORE_URL=${DATACORE_URL}
+            GATSBY_ASSETS_URL:
+            GATSBY_DATACORE_URL:
         deploy:
             restart_policy: 
                 condition: on-failure
                 
         container_name: DCWebsite  
         volumes:
-            - sitebuild:/app/public:rw
+            - sitebuild:/sitebuild:rw
         profiles: [ "all", "website", "asset-server", "site-server", "fullstack" ]
 
     asset-server:
@@ -102,7 +104,7 @@ services:
         profiles: ["all", "site-server", "fullstack"]
 
     nginx:
-        image: nginx:alpine
+        image: nginx:alpine${ALPINE_VERSION}
         container_name: NginxServer
         deploy:
             restart_policy:
@@ -131,7 +133,8 @@ services:
         container_name: prometheus
         ports:
             - "9090:9090"
-        command: ["prometheus", "--config.file=/etc/prometheus/prometheus.yml" ]
+        command: 
+            - --config.file=/etc/prometheus/prometheus.yml
         volumes:
             - "./contexts/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro"
         depends_on:
@@ -139,7 +142,7 @@ services:
         profiles: [ "all", "monitoring" ]
 
     cadvisor:
-        image: gcr.io/google-containers/cadvisor:latest
+        image: gcr.io/cadvisor/cadvisor:latest
         container_name: cadvisor
         deploy:
             restart_policy: 
@@ -151,7 +154,7 @@ services:
             - "/var/run:/var/run:rw"
             - "/sys:/sys:ro"
             - "/var/lib/docker/:/var/lib/docker:ro"
-        command: [ "cadvisor", "--housekeeping_interval=30s", "--docker_only", "--disable_metrics=disk,network,tcp,udp,percpu,sched,process" ]
+        command: [ "--housekeeping_interval=30s", "--docker_only", "--disable_metrics=disk,network,tcp,udp,percpu,sched,process" ] 
         profiles: [ "all", "monitoring" ]
 
     rsync-host:
@@ -175,7 +178,7 @@ services:
         profiles: [ "all", "rsync", "fullstack" ]
 
     cpp-image-analysis:
-        image: datacore:cpp-image-analysis
+        image: datacore/cpp-image-analysis
         build: 
             context: contexts/cpp-image-analysis
             additional_contexts:
@@ -221,6 +224,7 @@ services:
             - LOG_PATH=/data/logs/
             - DC_DATA_PATH=/sitebuild/structured
             - CONFIG_PATH=/data/bot_config.json
+            - DC_BOT_TOKEN=${DC_BOT_TOKEN}
         depends_on:
             - cpp-image-analysis
         profiles: ["all", "bot"]
