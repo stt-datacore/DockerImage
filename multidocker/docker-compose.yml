@@ -6,11 +6,12 @@ volumes:
     traindata:
     nginx-logs:
     site-logs:
+    bot-logs:
 
 services:
     gittower:
-        build:
-            context: gittower
+        image: datacore/gittower
+        build: contexts/gittower
         command: watch website https://github.com/stt-datacore/website.git ${WEBSITE_BRANCH} && gittower
         deploy:
             restart_policy: 
@@ -18,21 +19,28 @@ services:
         container_name: gittower  
         volumes:
             - /var/run/docker.sock:/var/run/docker.sock
+        env_file:
+            - ./.env
         profiles: ["all", "gittower"]
 
+    pm2-discord:
+        image: datacore/pm2-discord
+        build: 
+            context: contexts/pm2-discord
+            args:
+                ALPINE_VERSION:
+                NODE_VERSION:
+                PM2_ERROR_URL:
+                PM2_INFO_URL:
+            
     website:
         build:
-            context: https://github.com/stt-datacore/website.git#${WEBSITE_BRANCH}
-            dockerfile_inline: |
-                FROM node:16-alpine
-                RUN apk add build-base python3 git
-                WORKDIR /app
-                # Sentry requires the github sha
-                RUN git clone https://github.com/stt-datacore/website.git .git --bare --depth 1
-                COPY . .
-                RUN yarn install
-                RUN npx update-browserslist-db@latest 
-                CMD yarn run build
+            context: contexts/website
+            additional_contexts:
+                source: https://github.com/stt-datacore/website.git#${WEBSITE_BRANCH}
+            args:
+                ALPINE_VERSION:
+                NODE_VERSION:                
         environment:
             - GATSBY_ASSETS_URL=${ASSETS_URL}
             - GATSBY_DATACORE_URL=${DATACORE_URL}
@@ -43,45 +51,38 @@ services:
         container_name: DCWebsite  
         volumes:
             - sitebuild:/app/public:rw
-        profiles: ["all", "website", "asset-server", "site-server", "fullstack"]
+        profiles: [ "all", "website", "asset-server", "site-server", "fullstack" ]
 
     asset-server:
+        image: datacore/asset-server
         build:
-            context: https://github.com/stt-datacore/asset-server.git#${ASSET_BRANCH}
-            dockerfile_inline: |
-                FROM node:16-alpine
-                RUN apk add bash python3 build-base
-                RUN mkdir /app
-                WORKDIR /app
-                RUN echo */30 * * * * /app/exec.sh > crontab
-                RUN crontab ./crontab
-                COPY . .
-                RUN npm install
-                RUN npm run build
-                CMD ./exec.sh && crond -f -l 8
+            context: contexts/asset-server 
+            additional_contexts:
+                source: https://github.com/stt-datacore/asset-server.git#${ASSET_BRANCH}
+            args:
+                ALPINE_VERSION:
+                NODE_VERSION:
+
         container_name: DCAssetServer 
         deploy:
             restart_policy: 
                 condition: on-failure
         volumes:
             - assets:/assets:rw"
-
         environment:
             - OUT_PATH=/assets/
         profiles: [ "all", "asset-server", "fullstack"]
 
     site-server:
+        image: datacore/site-server
         build:
-            context: https://github.com/stt-datacore/site-server.git#${SERVER_BRANCH}
-            dockerfile_inline: |
-                FROM keymetrics/pm2:latest-alpine
-                RUN apk add python3 python2 build-base sqlite
-                RUN mkdir /app
-                WORKDIR /app
-                COPY . .
-                RUN npm install
-                RUN npm run build
-                CMD pm2-runtime --name server start npm -- start
+            context: contexts/site-server
+            additional_contexts: 
+                source: https://github.com/stt-datacore/site-server.git#${SERVER_BRANCH}
+                pm2-discord: contexts/pm2-discord
+            target: ${BUILD_TYPE}
+            args:
+                $NODE_VERSION:
         container_name: DCSiteServer 
         deploy:
             restart_policy: 
@@ -96,6 +97,8 @@ services:
             - PROFILE_DATA_PATH=/data/profiles
             - DB_CONNECTION_STRING=sqlite:/database
             - LOG_PATH=/data/logs/
+        depends_on:
+            - pm2-discord
         profiles: ["all", "site-server", "fullstack"]
 
     nginx:
@@ -111,13 +114,9 @@ services:
             - sitebuild:/sitebuild:ro
             - assets:/assets:ro
             - profiles:/profiles:ro
-            - ./nginx-sites/${NGINX_CONF}:/etc/nginx/conf.d/default.conf:rw
+            - ./contexts/nginx/${NGINX_CONF}:/etc/nginx/conf.d/default.conf:rw
             - nginx-logs:/var/log/nginx:rw
             
-        depends_on:
-            - website
-            - asset-server
-            - site-server
         profiles: [ "all", "website", "asset-server", "site-server", "fullstack" ]
 
     node_exporter:
@@ -132,10 +131,9 @@ services:
         container_name: prometheus
         ports:
             - "9090:9090"
-        command:
-            - --config.file=/etc/prometheus/prometheus.yml
+        command: ["prometheus", "--config.file=/etc/prometheus/prometheus.yml" ]
         volumes:
-            - "./prometheus.yml:/etc/prometheus/prometheus.yml:ro"
+            - "./contexts/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro"
         depends_on:
             - cadvisor
         profiles: [ "all", "monitoring" ]
@@ -153,10 +151,7 @@ services:
             - "/var/run:/var/run:rw"
             - "/sys:/sys:ro"
             - "/var/lib/docker/:/var/lib/docker:ro"
-        command:
-            - "--housekeeping_interval=30s"
-            - "--docker_only"
-            - "--disable_metrics=disk,network,tcp,udp,percpu,sched,process"
+        command: [ "cadvisor", "--housekeeping_interval=30s", "--docker_only", "--disable_metrics=disk,network,tcp,udp,percpu,sched,process" ]
         profiles: [ "all", "monitoring" ]
 
     rsync-host:
@@ -180,7 +175,14 @@ services:
         profiles: [ "all", "rsync", "fullstack" ]
 
     cpp-image-analysis:
-        build: https://github.com/stt-datacore/cpp-image-analysis
+        image: datacore:cpp-image-analysis
+        build: 
+            context: contexts/cpp-image-analysis
+            additional_contexts:
+                source: https://github.com/stt-datacore/cpp-image-analysis.git
+            args:
+                ALPINE_VERSION:
+
         container_name: DCImageAnalysis 
         deploy:
             restart_policy: 
@@ -189,21 +191,30 @@ services:
             - "5000:5000"
         volumes:
             - "sitebuild:/sitebuild:ro"
-            - "./cvdata:/cdvdata:ro"
+            - "./contexts/cvdata:/cdvdata:ro"
             - "traindata:/traindata:rw"
-        command: --asseturl=${ASSETS_URL} --trainpath=/traindata/ --datapath=/cdvdata/ --jsonpath=/sitebuild/structured/
+        depends_on:
+            - pm2-discord
         profiles: [ "all", "bot" ]
 
-    bot :
-        image: ghcr.io/stt-datacore/bot:latest
+    bot: 
+        image: datacore/bot
+        build:
+            context: contexts/bot
+            additional_contexts: 
+                source: https://github.com/stt-datacore/bot.git#${BOT_BRANCH}
+            target: ${BUILD_TYPE}
+            args:
+                NODE_VERSION:
+
         container_name: DCBot 
         deploy:
             restart_policy: 
                 condition: on-failure
-        network_mode: "host" # Is this needed?
         volumes:
-            - ".:/data:rw"
+            - "profiles:/data/profiles:rw"
             - "sitebuild:/sitebuild:ro"
+            - "bot-logs:/data/logs:rw"
         environment:
             - PROFILE_DATA_PATH=/data/profiles
             - DB_CONNECTION_STRING=sqlite:/data/datacore.db
