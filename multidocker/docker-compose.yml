@@ -172,7 +172,6 @@ services:
             - "traindata:/data/traindata:rw"
             - "nginx-logs:/logs/nginx:ro"
             - "site-logs:/logs/site-server:ro"
-
         environment:
             - ROOT_PASSWORD=${RSYNC_PASSWORD}
         profiles: [ "all", "rsync", "fullstack" ]
@@ -185,7 +184,6 @@ services:
                 source: https://github.com/stt-datacore/cpp-image-analysis.git
             args:
                 ALPINE_VERSION:
-
         container_name: DCImageAnalysis 
         deploy:
             restart_policy: 
@@ -194,7 +192,7 @@ services:
             - "5000:5000"
         volumes:
             - "sitebuild:/sitebuild:ro"
-            - "./contexts/cvdata:/cdvdata:ro"
+            - "./contexts/cvdata:/data:ro"
             - "traindata:/traindata:rw"
         depends_on:
             - pm2-discord
@@ -209,7 +207,6 @@ services:
             target: ${BUILD_TYPE}
             args:
                 NODE_VERSION:
-
         container_name: DCBot 
         deploy:
             restart_policy: 
@@ -218,13 +215,18 @@ services:
             - "profiles:/data/profiles:rw"
             - "sitebuild:/sitebuild:ro"
             - "bot-logs:/data/logs:rw"
+            - "assets:/assets:ro"
         environment:
             - PROFILE_DATA_PATH=/data/profiles
             - DB_CONNECTION_STRING=sqlite:/data/datacore.db
             - LOG_PATH=/data/logs/
             - DC_DATA_PATH=/sitebuild/structured
             - CONFIG_PATH=/data/bot_config.json
-            - DC_BOT_TOKEN=${DC_BOT_TOKEN}
+            - INGFLIP_USERNAME=${INGFLIP_USERNAME}
+            - INGFLIP_PASSWORD=${INGFLIP_PASSWORD}
+            - BOT_TOKEN=${BOT_TOKEN}
+            - ASSETS_URL=${GATSBY_ASSETS_URL}
+            - DATACORE_URL=${GATSBY_DATACORE_URL}
         depends_on:
             - cpp-image-analysis
         profiles: ["all", "bot"]
