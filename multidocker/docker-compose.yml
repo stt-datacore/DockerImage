@@ -75,6 +75,19 @@ services:
             - OUT_PATH=/assets/
         profiles: [ "all", "asset-server", "fullstack"]
 
+    datacoredb:
+        image: mongo:4.4.6
+        container_name: datacoredb
+        volumes:
+            - ./mongo-volume:/data/db
+        ports:
+            - '27017-27019:27017-27019'
+        environment:
+            - MONGO_INITDB_DATABASE=user
+            - MONGO_INITDB_ROOT_USERNAME=admin
+            - MONGO_INITDB_ROOT_PASSWORD=secret
+        profiles: ["all", "site-server", "fullstack"]
+
     site-server:
         image: datacore/site-server
         build:
@@ -101,6 +114,7 @@ services:
             - LOG_PATH=/data/logs/
         depends_on:
             - pm2-discord
+            - datacoredb
         profiles: ["all", "site-server", "fullstack"]
 
     nginx:
