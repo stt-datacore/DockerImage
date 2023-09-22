@@ -1,0 +1,6 @@
+for dir in /app/*/     # list directories in the form "/tmp/dirname/"
+do
+    dir=${dir%*/}      # remove the trailing "/"
+    cd ${dir}
+    git status|grep "is behind" && git pull && docker-compose up --build ${dir##*/}
+done

@@ -21,6 +21,6 @@ implementation enter the multidocker directory and run `docker-compose --profile
 * site-server - Deploy just the website and the site server.
 * website - Deploy the website only.
 * rsync - Deploy the rsync server used to inspect logs and data held by the volumes on the stack.
-* bot - Deploy all the services needed to run the Discord bot. (not yet implemented)
-* monitoring - Deploy monitoring services. (not yet implemented)
+* bot - Deploy all the services needed to run the Discord bot. (partially tested)
+* monitoring - Deploy monitoring services. (untested)
 * gittower - Deploy the gittower tool used to restart services when their source repository is changed. (untested)

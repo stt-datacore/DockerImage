@@ -1,0 +1,2 @@
+#!/bin/bash
+git clone $2 $1 --branch $3 --single-branch --depth 1 --bare
