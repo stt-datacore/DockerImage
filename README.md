@@ -13,7 +13,7 @@ After installing Docker Compose download the latest version of DockerImage using
 git clone https://github.com/stt-datacore/DockerImage.git
 ```
 Then the single docker image can be built by running `docker build -t datacore .` in the base directory. Followed by `docker run datacore`. To run the Compose 
-implementation enter the multidocker directory and run `docker-compose --profile <profile> up --build -d` where the profile is one of the options below.
+implementation enter the multidocker directory and run `docker-compose --profile <profile1> [--profile <profile2> ...] up --build -d` where the profile(s) are selected from the options below.
 
 * all - Deploy the entire stack.
 * fullstack - Deploy all the services needed to run the website locally. 
@@ -21,6 +21,6 @@ implementation enter the multidocker directory and run `docker-compose --profile
 * site-server - Deploy just the website and the site server.
 * website - Deploy the website only.
 * rsync - Deploy the rsync server used to inspect logs and data held by the volumes on the stack.
-* bot - Deploy all the services needed to run the Discord bot. (untested)
+* bot - Deploy all the services needed to run the Discord bot. (partially tested)
 * monitoring - Deploy monitoring services. (untested)
 * gittower - Deploy the gittower tool used to restart services when their source repository is changed. (untested)

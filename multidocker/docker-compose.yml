@@ -74,20 +74,6 @@ services:
         environment:
             - OUT_PATH=/assets/
         profiles: [ "all", "asset-server", "fullstack"]
-    
-    datacoredb:
-        image: mongo:4.4.6
-        container_name: datacoredb
-        volumes:
-            - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
-            - ./mongo-volume:/data/db
-        ports:
-            - '27017-27019:27017-27019'
-        environment:
-            - MONGO_INITDB_DATABASE=user
-            - MONGO_INITDB_ROOT_USERNAME=admin
-            - MONGO_INITDB_ROOT_PASSWORD=secret
-        profiles: ["all", "site-server", "fullstack", "mongo"]
 
     site-server:
         image: datacore/site-server
@@ -114,7 +100,6 @@ services:
             - DB_CONNECTION_STRING=sqlite:/database
             - LOG_PATH=/data/logs/
         depends_on:
-            - datacoredb
             - pm2-discord
         profiles: ["all", "site-server", "fullstack"]
 
