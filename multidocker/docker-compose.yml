@@ -80,13 +80,14 @@ services:
         container_name: datacoredb
         volumes:
             - ./mongo-volume:/data/db
-        ports:
-            - '27017-27019:27017-27019'
+        # Uncomment for local development
+        # ports:
+        #     - '27017-27019:27017-27019'
         environment:
-            - MONGO_INITDB_DATABASE=user
-            - MONGO_INITDB_ROOT_USERNAME=admin
-            - MONGO_INITDB_ROOT_PASSWORD=secret
-        profiles: ["all", "site-server", "fullstack"]
+            - MONGO_INITDB_DATABASE=${MONGO_INITDB_DATABASE}
+            - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
+            - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
+        profiles: ["all", "site-server", "bot", "fullstack"]
 
     site-server:
         image: datacore/site-server
@@ -243,4 +244,5 @@ services:
             - DATACORE_URL=${GATSBY_DATACORE_URL}
         depends_on:
             - cpp-image-analysis
+            - datacoredb
         profiles: ["all", "bot"]
