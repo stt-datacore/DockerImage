@@ -1,8 +1,8 @@
 ARG ALPINE_VERSION
-FROM alpine:${ALPINE_VERSION}
-RUN apk add docker git bash
-RUN echo */30 * * * * ./runjobs > crontab
-RUN crontab ./crontab
+FROM alpine:$ALPINE_VERSION
+RUN apk add docker docker-compose git bash
+RUN echo "*/2 * * * * /app/runjobs" > ./crontab.tmp
+RUN crontab ./crontab.tmp
 RUN mkdir /app
 WORKDIR /app
 COPY . .
