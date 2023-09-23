@@ -98,18 +98,19 @@ services:
             target: ${BUILD_TYPE}
             args:
                 $NODE_VERSION:
-                PROFILE_DATA_PATH: ${PROFILE_DATA_PATH}
-                DB_CONNECTION_STRING: ${DB_CONNECTION_STRING}
-                LOG_PATH: ${LOG_PATH}
-                STT_BOT_USERNAME: ${STT_BOT_USERNAME}
-                STT_BOT_PASSWORD: ${STT_BOT_PASSWORD}
-                JWT_SECRET: ${JWT_SECRET}
-                MONGO_CONN_STRING: ${MONGO_CONN_STRING}
-                MONGO_DB_NAME: ${MONGO_DB_NAME}
-                MONGO_PROFILE_COLLECTION: ${MONGO_PROFILE_COLLECTION}
-                MONGO_TRACKED_VOYAGES_COLLECTION: ${MONGO_TRACKED_VOYAGES_COLLECTION}
-                MONGO_TRACKED_ASSIGNMENTS_COLLECTION: ${MONGO_TRACKED_ASSIGNMENTS_COLLECTION}
-                CORS_ORIGIN: ${CORS_ORIGIN}
+        environment:
+            - PROFILE_DATA_PATH=${PROFILE_DATA_PATH}
+            - DB_CONNECTION_STRING=${DB_CONNECTION_STRING}
+            - LOG_PATH=${LOG_PATH}
+            - STT_BOT_USERNAME=${STT_BOT_USERNAME}
+            - STT_BOT_PASSWORD=${STT_BOT_PASSWORD}
+            - JWT_SECRET=${JWT_SECRET}
+            - MONGO_CONN_STRING=${MONGO_CONN_STRING}
+            - MONGO_DB_NAME=${MONGO_DB_NAME}
+            - MONGO_PROFILE_COLLECTION=${MONGO_PROFILE_COLLECTION}
+            - MONGO_TRACKED_VOYAGES_COLLECTION=${MONGO_TRACKED_VOYAGES_COLLECTION}
+            - MONGO_TRACKED_ASSIGNMENTS_COLLECTION=${MONGO_TRACKED_ASSIGNMENTS_COLLECTION}
+            - CORS_ORIGIN=${CORS_ORIGIN}
         container_name: DCSiteServer 
         deploy:
             restart_policy: 
@@ -120,23 +121,6 @@ services:
             - site-logs:/data/logs:rw
             - profiles:/data/profiles:rw"
             - ${SQLITE_DB}:/database
-        environment:
-            - PROFILE_DATA_PATH=/data/profiles
-            - DB_CONNECTION_STRING=sqlite:/database
-            - LOG_PATH=/data/logs/
-            - STT_BOT_USERNAME=${STT_BOT_USERNAME}
-            - STT_BOT_PASSWORD=${STT_BOT_PASSWORD}
-            - JWT_SECRET=${JWT_SECRET}
-            - DB_CONNECTION_STRING=${DB_CONNECTION_STRING}
-            - MONGO_CONN_STRING=${MONGO_CONN_STRING}
-            - MONGO_DB_NAME=${MONGO_DB_NAME}
-            - MONGO_PROFILE_COLLECTION=${MONGO_PROFILE_COLLECTION}
-            - MONGO_TRACKED_VOYAGES_COLLECTION=${MONGO_TRACKED_VOYAGES_COLLECTION}
-            - MONGO_TRACKED_ASSIGNMENTS_COLLECTION=${MONGO_TRACKED_ASSIGNMENTS_COLLECTION}
-            - CORS_ORIGIN=${CORS_ORIGIN}
-            - PROFILE_DATA_PATH=${PROFILE_DATA_PATH}
-            - LOG_PATH=${LOG_PATH}
-
         depends_on:
             - pm2-discord
             - datacoredb
