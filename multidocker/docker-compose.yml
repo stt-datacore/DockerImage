@@ -21,10 +21,11 @@ services:
         container_name: gittower  
         volumes:
             - /var/run/docker.sock:/var/run/docker.sock
-            - .:/docker:ro
+            - /var/run/docker-cli.sock:/var/run/docker-cli.sock
+            - .:/docker:rw
         env_file:
             - ./.env
-        profiles: ["all", "gittower"]
+        profiles: ["all", "gittower", "fullstack"]
 
     pm2-discord:
         image: datacore/pm2-discord

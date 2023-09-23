@@ -2,3 +2,4 @@ data
 mongo-volume/
 .env
 datacore.db
+id_rsa*
