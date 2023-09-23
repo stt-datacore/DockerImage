@@ -3,5 +3,5 @@ do
     echo check ${dir}
     dir=${dir%*/}      # remove the trailing "/"
     cd ${dir}
-    git remote update && git status|grep "is behind" && git pull && cd /docker && docker-compose -p ${dir##*/} up --build -d
+    git remote update && git status|grep "is behind" && git pull && cd /docker && docker-compose --profile ${dir##*/} up --build -d
 done
