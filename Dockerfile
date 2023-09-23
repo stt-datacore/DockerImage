@@ -73,7 +73,6 @@ RUN npm install
 
 # Build site server
 WORKDIR /site-server
-RUN git checkout mongodb-code
 RUN npm install
 RUN npm run build
 #RUN ln -s /data/config/env /site-server/.env
