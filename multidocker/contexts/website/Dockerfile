@@ -13,6 +13,6 @@ ARG GATSBY_DATACORE_URL
 RUN echo GATSBY_DATACORE_URL=$GATSBY_DATACORE_URL > .env
 ARG GATSBY_ASSETS_URL
 RUN echo GATSBY_ASSETS_URL=$GATSBY_ASSETS_URL >> .env
-RUN cat .env && sleep 1s
+RUN cat .env && sleep 5s
 RUN yarn run build
 CMD rsync -ru --delete-after /app/public /sitebuild/
