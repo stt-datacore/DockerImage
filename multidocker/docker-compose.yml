@@ -42,7 +42,7 @@ services:
                 source: https://github.com/stt-datacore/website.git#${WEBSITE_BRANCH}
             args:
                 ALPINE_VERSION: ${ALPINE_VERSION} 
-                NODE_VERSION: ${NODE_VERSION}                
+                NODE_VERSION: ${NODE_VERSION}                                
                 GATSBY_ASSETS_URL: ${GATSBY_ASSETS_URL}
                 GATSBY_DATACORE_URL: ${GATSBY_DATACORE_URL} 
         deploy:
