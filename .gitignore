@@ -1,3 +1,4 @@
 data
 mongo-volume/
 .env
+datacore.db
