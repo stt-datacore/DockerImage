@@ -19,10 +19,6 @@ services:
             restart_policy: 
                 condition: on-failure
         container_name: gittower  
-        volumes:
-            - /var/run/docker.sock:/var/run/docker.sock
-            - /var/run/docker-cli.sock:/var/run/docker-cli.sock
-            - .:/docker:rw
         env_file:
             - ./.env
         profiles: ["all", "gittower", "fullstack"]
