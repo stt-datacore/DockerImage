@@ -1,0 +1,3 @@
+#!/bin/bash
+echo Starting cron
+crond -f -l 8

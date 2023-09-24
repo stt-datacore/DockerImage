@@ -1,0 +1,7 @@
+for dir in /app/*/     # list directories in the form "/tmp/dirname/"
+do
+    echo check ${dir}
+    dir=${dir%*/}      # remove the trailing "/"
+    cd ${dir}
+    git remote update && git status|grep "is behind" && git pull && cd /docker && docker-compose --profile fullstack up --build -d ${dir##*/} && docker-compose --profile fullstack restart nginx
+done

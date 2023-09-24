@@ -1,7 +1,7 @@
 ARG ALPINE_VERSION
 FROM alpine:latest
 RUN apk add git bash openssh-client openssh
-RUN echo "*/30 * * * * /app/runjobs" > ./crontab.tmp
+RUN echo "*/15 * * * * /app/runjobs" > ./crontab.tmp
 RUN crontab ./crontab.tmp
 RUN mkdir /app
 RUN mkdir ~/.ssh

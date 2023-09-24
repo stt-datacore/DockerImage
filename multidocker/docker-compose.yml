@@ -7,21 +7,64 @@ volumes:
     nginx-logs:
     site-logs:
     bot-logs:
+    tower-stack-app:
 
 services:
-    gittower:
-        image: datacore/gittower
+    # gittower:
+    #     image: datacore/gittower
+    #     build: 
+    #         context: contexts/gittower
+    #         args:
+    #             ALPINE_VERSION: ${ALPINE_VERSION}
+    #     deploy:
+    #         restart_policy: 
+    #             condition: on-failure
+    #     container_name: gittower  
+    #     env_file:
+    #         - ./.env
+    #     profiles: ["all", "gittower"]
+
+    tower-stack:
+        image: datacore/tower-stack
         build: 
-            context: contexts/gittower
+            context: contexts/tower-stack
             args:
                 ALPINE_VERSION: ${ALPINE_VERSION}
         deploy:
             restart_policy: 
                 condition: on-failure
-        container_name: gittower  
+        container_name: tower-stack
+        entrypoint: /app/gittower
+        volumes:
+            - tower-stack-app:/app
+            - /var/run/docker.sock:/var/run/docker.sock
+            - /var/run/docker-cli.sock:/var/run/docker-cli.sock
+            - .:/docker:rw
         env_file:
             - ./.env
-        profiles: ["all", "gittower", "fullstack"]
+        profiles: ["tower-stack"]
+
+    tower-stack-cron:
+        image: datacore/tower-stack
+        build: 
+            context: contexts/tower-stack
+            args:
+                ALPINE_VERSION: ${ALPINE_VERSION}
+        deploy:
+            restart_policy: 
+                condition: on-failure
+        entrypoint: /app/cron-job
+        container_name: tower-stack-cron
+        volumes:
+            - tower-stack-app:/app
+            - /var/run/docker.sock:/var/run/docker.sock
+            - /var/run/docker-cli.sock:/var/run/docker-cli.sock
+            - .:/docker:rw
+        env_file:
+            - ./.env
+        profiles: ["tower-stack"]
+        depends_on:
+            - tower-stack
 
     pm2-discord:
         image: datacore/pm2-discord
@@ -32,7 +75,8 @@ services:
                 NODE_VERSION:
                 PM2_ERROR_URL:
                 PM2_INFO_URL:
-            
+        profiles: ["all", "fullstack", "site-server", "website"]
+        
     website:
         build:
             context: contexts/website
@@ -137,8 +181,8 @@ services:
             - sitebuild:/sitebuild:ro
             - ${ASSETS_DIR}:/assets:ro
             - profiles:/profiles:ro
-            - ./contexts/nginx/${NGINX_CONF}:/etc/nginx/conf.d/default.conf:rw
             - nginx-logs:/var/log/nginx:rw
+            - ${NGINX_CONF}:/etc/nginx/conf.d/default.conf:rw
             
         profiles: [ "all", "website", "asset-server", "site-server", "fullstack" ]
 

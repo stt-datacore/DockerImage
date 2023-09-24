@@ -3,5 +3,5 @@ do
     echo check ${dir}
     dir=${dir%*/}      # remove the trailing "/"
     cd ${dir}
-    git remote update && git status|grep "is behind" && git pull && cd /app && source .env && ssh -i ./$HOST_RSA $HOST_USER@$CONTAINER_HOST "cd $HOST_PATH; docker-compose up -d --build ${dir##*/}"
+    git remote update && git status|grep "is behind" && git pull && cd /app && source .env && ssh -i ./$HOST_RSA $HOST_USER@$CONTAINER_HOST "cd $HOST_PATH; docker-compose up -d --build ${dir##*/}; echo ${dir##*/}| grep site-server && docker-compose restart nginx"
 done

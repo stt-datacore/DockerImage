@@ -1,0 +1,3 @@
+#!/bin/bash
+./setup-jobs
+cd /docker && docker-compose --profile fullstack up --build
