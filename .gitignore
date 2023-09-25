@@ -3,3 +3,4 @@ mongo-volume/
 .env
 datacore.db
 id_rsa*
+local.conf
