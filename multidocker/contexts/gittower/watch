@@ -1,3 +1,0 @@
-#!/bin/bash
-echo repo $1, branch: $3
-git clone $2.git ./$1 --branch $3 --single-branch --depth 1

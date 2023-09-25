@@ -10,20 +10,6 @@ volumes:
     tower-stack-app:
 
 services:
-    # gittower:
-    #     image: datacore/gittower
-    #     build: 
-    #         context: contexts/gittower
-    #         args:
-    #             ALPINE_VERSION: ${ALPINE_VERSION}
-    #     deploy:
-    #         restart_policy: 
-    #             condition: on-failure
-    #     container_name: gittower  
-    #     env_file:
-    #         - ./.env
-    #     profiles: ["all", "gittower"]
-
     tower-stack:
         image: datacore/tower-stack
         build: 
