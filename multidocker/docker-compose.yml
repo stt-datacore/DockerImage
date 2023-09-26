@@ -24,7 +24,6 @@ services:
         volumes:
             - tower-stack-app:/app
             - /var/run/docker.sock:/var/run/docker.sock
-            - /var/run/docker-cli.sock:/var/run/docker-cli.sock
             - .:/docker:rw
         env_file:
             - ./.env
@@ -44,7 +43,6 @@ services:
         volumes:
             - tower-stack-app:/app
             - /var/run/docker.sock:/var/run/docker.sock
-            - /var/run/docker-cli.sock:/var/run/docker-cli.sock
             - .:/docker:rw
         env_file:
             - ./.env
