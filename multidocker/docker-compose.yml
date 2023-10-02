@@ -1,4 +1,4 @@
-version: '3'
+version: '3.8'
 volumes:
     sitebuild:
     assets:
@@ -13,16 +13,15 @@ services:
         image: datacore/gittower
         build: 
             context: contexts/gittower
-            args:
-                ALPINE_VERSION:
         deploy:
             restart_policy: 
                 condition: on-failure
         container_name: gittower  
+        env_file:
+            - .env
         volumes:
             - /var/run/docker.sock:/var/run/docker.sock
-        env_file:
-            - ./.env
+            - .:/docker
         profiles: ["all", "gittower"]
 
     pm2-discord:
@@ -36,20 +35,27 @@ services:
                 PM2_INFO_URL:
             
     website:
+        image: datacore/website
         build:
             context: contexts/website
             additional_contexts:
                 source: https://github.com/stt-datacore/website.git#${WEBSITE_BRANCH}
             args:
                 ALPINE_VERSION:
-                NODE_VERSION:                
+                NODE_VERSION:    
+        x-develop:
+            watch:
+                - action: sync
+                  path: ./source/src
+                  target: /app/src
+                - action: rebuild
+                  path: ./source/package.json
         environment:
             GATSBY_ASSETS_URL:
             GATSBY_DATACORE_URL:
         deploy:
             restart_policy: 
                 condition: on-failure
-                
         container_name: DCWebsite  
         volumes:
             - sitebuild:/sitebuild:rw

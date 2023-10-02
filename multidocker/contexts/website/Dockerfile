@@ -9,4 +9,4 @@ COPY --from=source package.json yarn.lock ./
 RUN yarn install
 RUN npx update-browserslist-db@latest 
 COPY --from=source . .
-CMD yarn run build && rsync -ru --delete-after /app/public/ /sitebuild/
+CMD yarn run build && rsync -ru --delete-after /app/public/ /sitebuild/ && sleep infinity

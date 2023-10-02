@@ -1,0 +1,15 @@
+#!/bin/bash
+
+function reload {
+    git pull
+    docker-compose -f /docker/docker-compose.yml -p multidocker up $1 --build -d
+}
+
+for dir in /app/*/     # list directories in the form "/app/dirname/"
+do
+    dir=${dir%*/}      # remove the trailing "/"
+    echo ${dir}
+    cd ${dir}
+    git fetch
+    git status|grep "is behind" && reload ${dir##*/}
+done
