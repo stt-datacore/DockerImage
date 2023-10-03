@@ -8,6 +8,7 @@ volumes:
     site-logs:
     bot-logs:
     tower-stack-app:
+    datacore-mongo:
 
 services:
     tower-stack:
@@ -106,7 +107,7 @@ services:
         image: mongo:4.4.6
         container_name: datacoredb
         volumes:
-            - ./mongo-volume:/data/db
+            - datacore-mongo:/data/db
         # Uncomment for local development
         # ports:
         #     - '27017-27019:27017-27019'
@@ -115,6 +116,19 @@ services:
             - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
             - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
         profiles: ["all", "site-server", "bot", "fullstack"]
+
+    # local-dev-db:
+    #     image: mongo:4.4.6
+    #     container_name: local-dev-db
+    #     volumes:
+    #         - datacore-mongo:/data/db
+    #     # Uncomment for local development
+    #     ports:
+    #         - '27017-27019:27017-27019'
+    #     environment:
+    #         - MONGO_INITDB_DATABASE=${MONGO_INITDB_DATABASE}
+    #         - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
+    #         - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
 
     site-server:
         image: datacore/site-server
