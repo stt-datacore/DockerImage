@@ -1,3 +1,4 @@
 #!/bin/bash
 ./setup-jobs
+echo gittower waiting ...
 crond -f -l 8
