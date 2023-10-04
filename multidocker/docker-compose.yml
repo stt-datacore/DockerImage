@@ -65,8 +65,8 @@ services:
             additional_contexts:
                 source: https://github.com/stt-datacore/asset-server.git#${ASSET_BRANCH}
             args:
-                ALPINE_VERSION:
-                NODE_VERSION:
+                ALPINE_VERSION: ${ALPINE_VERSION} 
+                NODE_VERSION: ${NODE_VERSION}
 
         container_name: DCAssetServer 
         deploy:
@@ -137,7 +137,7 @@ services:
         volumes:
             - site-logs:/data/logs:rw
             - profiles:/data/profiles:rw"
-            - ${SQLITE_DB}:/database
+            - ${SQLITE_DB}:/datacore.db
         depends_on:
             - pm2-discord
             - datacoredb
