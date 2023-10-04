@@ -13,6 +13,9 @@ services:
         image: datacore/gittower
         build: 
             context: contexts/gittower
+            args:
+                ALPINE_VERSION: ${ALPINE_VERSION}
+                NODE_VERSION: ${NODE_VERSION}
         deploy:
             restart_policy: 
                 condition: on-failure
