@@ -73,7 +73,7 @@ services:
             restart_policy: 
                 condition: on-failure
         volumes:
-            - ${ASSETS_DIR}:/assets:rw"
+            - ${ASSETS_DIR}:/assets:rw
         environment:
             - OUT_PATH=/assets/
         profiles: [ "all", "asset-server", "website", "fullstack" ]
@@ -113,7 +113,7 @@ services:
             args:
                 $NODE_VERSION:
         environment:
-            - PROFILE_DATA_PATH=${PROFILE_DATA_PATH}
+            - PROFILE_DATA_PATH=/profiles
             - DB_CONNECTION_STRING=${DB_CONNECTION_STRING}
             - LOG_PATH=${LOG_PATH}
             - STT_BOT_USERNAME=${STT_BOT_USERNAME}
@@ -136,7 +136,7 @@ services:
             - "4420:4420"
         volumes:
             - site-logs:/data/logs:rw
-            - profiles:/data/profiles:rw"
+            - ${PROFILE_DATA_PATH}:/profiles:rw"
             - ${SQLITE_DB}:/datacore.db
         depends_on:
             - pm2-discord
