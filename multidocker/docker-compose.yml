@@ -141,7 +141,7 @@ services:
         depends_on:
             - pm2-discord
             - datacoredb
-        profiles: ["all", "site-server", "fullstack"]
+        profiles: ["all", "site-server", "fullstack", "bot"]
 
     nginx:
         image: nginx:alpine${ALPINE_VERSION}
@@ -161,7 +161,7 @@ services:
         depends_on:
             - site-server
             - datacoredb
-        profiles: [ "all", "website", "asset-server", "site-server", "fullstack" ]
+        profiles: [ "all", "website", "asset-server", "site-server", "fullstack", "bot" ]
 
     node_exporter:
         image: prom/node-exporter
@@ -223,22 +223,26 @@ services:
         build: 
             context: contexts/cpp-image-analysis
             additional_contexts:
-                source: https://github.com/stt-datacore/cpp-image-analysis.git
+                source: https://github.com/stt-datacore/cpp-image-analysis.git#${CPP_BRANCH}
             args:
                 ALPINE_VERSION:
         container_name: DCImageAnalysis 
         deploy:
             restart_policy: 
                 condition: on-failure
-        # ports:
-        #     - 5000:5000
+        environment:
+            - CPP_TRAIN_PATH=/traindata/train/
+            - CPP_DATA_PATH=/traindata/data/
+            - ASSETS_URL=${BOT_ASSETS_URL}
+        ports:
+            - 5000:5000
         volumes:
             - sitebuild:/sitebuild:ro
             - traindata:/traindata:rw
-            # - ./contexts/cpp-image-analysis/cvdata:/traindata/data:ro
         depends_on:
             - pm2-discord
             - nginx
+            - website
         profiles: [ "all", "bot" ]
 
     bot: 
@@ -250,7 +254,7 @@ services:
             target: ${BUILD_TYPE}
             args:
                 NODE_VERSION:
-        container_name: DCBot 
+        container_name: DCBot
         deploy:
             restart_policy: 
                 condition: on-failure

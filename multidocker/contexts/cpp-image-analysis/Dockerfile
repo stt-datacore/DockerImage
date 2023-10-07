@@ -3,13 +3,17 @@ FROM datacore/pm2-discord as development
 
 ENV LANG=C.UTF-8
 
-WORKDIR /traindata
-RUN mkdir train
-
 WORKDIR /usr/src/dcimageanalysis
 COPY --from=source . .
 
+WORKDIR /traindata
+RUN mkdir train
+RUN cp /usr/src/dcimageanalysis/data . -r
+
+WORKDIR /usr/src/dcimageanalysis
+
 RUN apk add --no-cache --virtual .build \
+  curl \
   build-base \
   pkgconfig \
   cmake \
@@ -54,4 +58,4 @@ CMD ./imserver
 
 FROM development as production
 
-CMD pm2-runtime start "./imserver --jsonpath=/sitebuild/structured/ --trainpath=/traindata/train/ --datapath=/usr/src/dcimageanalysis/data/ --asseturl=http://NginxServer/assets/" --name "imageAnalysis"
+CMD pm2-runtime start "./imserver --jsonpath=/sitebuild/structured/ --trainpath=$CPP_TRAIN_PATH --datapath=$CPP_DATA_PATH --asseturl=$ASSETS_URL" --name "imageAnalysis"
