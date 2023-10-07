@@ -235,9 +235,10 @@ services:
         volumes:
             - sitebuild:/sitebuild:ro
             - traindata:/traindata:rw
-            - ./contexts/cpp-image-analysis/cvdata:/traindata/data:ro
+            # - ./contexts/cpp-image-analysis/cvdata:/traindata/data:ro
         depends_on:
             - pm2-discord
+            - nginx
         profiles: [ "all", "bot" ]
 
     bot: 

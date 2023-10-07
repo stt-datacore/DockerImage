@@ -3,6 +3,9 @@ FROM datacore/pm2-discord as development
 
 ENV LANG=C.UTF-8
 
+WORKDIR /traindata
+RUN mkdir train
+
 WORKDIR /usr/src/dcimageanalysis
 COPY --from=source . .
 
@@ -51,4 +54,4 @@ CMD ./imserver
 
 FROM development as production
 
-CMD pm2-runtime start "./imserver --jsonpath=/sitebuild/structured/ --trainpath=/traindata/train/ --datapath=/traindata/data/ --asseturl=https://assets.datacore.app/" --name "imageAnalysis"
+CMD pm2-runtime start "./imserver --jsonpath=/sitebuild/structured/ --trainpath=/traindata/train/ --datapath=/usr/src/dcimageanalysis/data/ --asseturl=http://NginxServer/assets/" --name "imageAnalysis"
