@@ -50,4 +50,5 @@ WORKDIR /usr/src/dcimageanalysis/build
 CMD ./imserver
 
 FROM development as production
-CMD pm2-runtime start "./imserver --jsonpath=/website/public_web/structured/ --trainpath=/data/train/ --datapath=/cpp-image-analysis/data/ --asseturl=https://assets.datacore.app/" --name "imageAnalysis"
+
+CMD pm2-runtime start "./imserver --jsonpath=/sitebuild/structured/ --trainpath=/traindata/train/ --datapath=/traindata/data/ --asseturl=https://assets.datacore.app/" --name "imageAnalysis"

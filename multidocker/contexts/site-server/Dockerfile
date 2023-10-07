@@ -2,7 +2,7 @@ FROM datacore/pm2-discord as development
 RUN apk add python3 build-base sqlite
 RUN mkdir /app
 WORKDIR /app
-COPY --from=source package.json package-lock.json .
+COPY --from=source package.json package-lock.json ./
 RUN npm install
 COPY --from=source . .
 RUN npm run build
