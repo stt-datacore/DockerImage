@@ -275,6 +275,8 @@ services:
             - BOT_TOKEN=${BOT_TOKEN}
             - ASSETS_URL=${BOT_ASSETS_URL}
             - DATACORE_URL=${BOT_DATACORE_URL}
+            - DEFAULT_GUILD=${DEFAULT_GUILD}
+            - NODE_ENV=${NODE_ENV}
             - IMAGE_ANALYSIS_URL=http://DCImageAnalysis:5000
             - MONGO_CONN_STRING=${MONGO_CONN_STRING}
             - MONGO_DB_NAME=${MONGO_DB_NAME}
