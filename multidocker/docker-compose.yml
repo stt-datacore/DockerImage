@@ -49,6 +49,8 @@ services:
                 NODE_VERSION: ${NODE_VERSION}                                
                 GATSBY_ASSETS_URL: ${GATSBY_ASSETS_URL}
                 GATSBY_DATACORE_URL: ${GATSBY_DATACORE_URL} 
+        env_file:
+            - ./conf/website.env
         deploy:
             restart_policy: 
                 condition: on-failure
@@ -138,6 +140,8 @@ services:
             - ${LOG_PATH}:/data/logs:rw
             - ${PROFILE_DATA_PATH}:/profiles:rw"
             - ${SQLITE_DB}:/datacore.db
+        env_file:
+            - ./conf/site-server.env           
         depends_on:
             - pm2-discord
             - datacoredb
@@ -178,7 +182,7 @@ services:
         command: 
             - --config.file=/etc/prometheus/prometheus.yml
         volumes:
-            - "./contexts/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro"
+            - ./contexts/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
         depends_on:
             - cadvisor
         profiles: [ "all", "monitoring" ]
@@ -192,10 +196,10 @@ services:
         ports:
             - "8080:8080"
         volumes:
-            - "/:/rootfs:ro"
-            - "/var/run:/var/run:rw"
-            - "/sys:/sys:ro"
-            - "/var/lib/docker/:/var/lib/docker:ro"
+            - /:/rootfs:ro
+            - /var/run:/var/run:rw
+            - /sys:/sys:ro
+            - /var/lib/docker/:/var/lib/docker:ro
         command: [ "--housekeeping_interval=30s", "--docker_only", "--disable_metrics=disk,network,tcp,udp,percpu,sched,process" ] 
         profiles: [ "all", "monitoring" ]
 
@@ -214,8 +218,8 @@ services:
             - traindata:/data/traindata:rw
             - nginx-logs:/logs/nginx:ro
             - site-logs:/logs/site-server:ro
-        environment:
-            - ROOT_PASSWORD=${RSYNC_PASSWORD}
+        env_file:
+            - ./conf/rsync.env
         profiles: [ "all", "rsync", "fullstack" ]
 
     cpp-image-analysis:
@@ -286,6 +290,8 @@ services:
             - MONGO_FBB_SOLVES_COLLECTION=${MONGO_FBB_SOLVES_COLLECTION}
             - MONGO_FBB_TRIALS_COLLECTION=${MONGO_FBB_TRIALS_COLLECTION}
             - MONGO_FBB_COLLECTION=${MONGO_FBB_COLLECTION}
+        env_file:
+            - ./conf/bot.env
         depends_on:
             - cpp-image-analysis
             - datacoredb
