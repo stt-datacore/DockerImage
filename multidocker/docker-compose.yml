@@ -37,6 +37,8 @@ services:
                 NODE_VERSION: ${NODE_VERSION}
                 PM2_ERROR_URL: ${PM2_ERROR_URL}
                 PM2_INFO_URL: ${PM2_INFO_URL}
+        env_file:
+            - .env
         profiles: ["all", "fullstack", "site-server", "website", "bot"]
         
     website:
@@ -45,11 +47,10 @@ services:
             additional_contexts:
                 source: https://github.com/stt-datacore/website.git#${WEBSITE_BRANCH}
             args:
-                ALPINE_VERSION: ${ALPINE_VERSION} 
-                NODE_VERSION: ${NODE_VERSION}                                
-                GATSBY_ASSETS_URL: ${GATSBY_ASSETS_URL}
-                GATSBY_DATACORE_URL: ${GATSBY_DATACORE_URL} 
+                ALPINE_VERSION: ${ALPINE_VERSION}
+                NODE_VERSION: ${NODE_VERSION}                       
         env_file:
+            - .env
             - ./conf/website.env
         deploy:
             restart_policy: 
@@ -85,10 +86,8 @@ services:
         container_name: datacoredb
         volumes:
             - datacore-mongo:/data/db
-        environment:
-            - MONGO_INITDB_DATABASE=${MONGO_INITDB_DATABASE}
-            - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
-            - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
+        env_file:
+            - .env
         profiles: ["all", "site-server", "bot", "fullstack"]
 
     local-dev-db:
@@ -98,10 +97,8 @@ services:
             - datacore-mongo:/data/db
         ports:
             - '27017-27019:27017-27019'
-        environment:
-            - MONGO_INITDB_DATABASE=${MONGO_INITDB_DATABASE}
-            - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
-            - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
+        env_file:
+            - .env
         profiles: ["local-mongo"]
 
     site-server:
@@ -114,22 +111,6 @@ services:
             target: ${BUILD_TYPE}
             args:
                 $NODE_VERSION:
-        environment:
-            - PROFILE_DATA_PATH=/profiles
-            - DB_CONNECTION_STRING=${DB_CONNECTION_STRING}
-            - LOG_PATH=/data/logs
-            - STT_BOT_USERNAME=${STT_BOT_USERNAME}
-            - STT_BOT_PASSWORD=${STT_BOT_PASSWORD}
-            - JWT_SECRET=${JWT_SECRET}
-            - MONGO_CONN_STRING=${MONGO_CONN_STRING}
-            - MONGO_DB_NAME=${MONGO_DB_NAME}
-            - MONGO_PROFILE_COLLECTION=${MONGO_PROFILE_COLLECTION}
-            - MONGO_TRACKED_VOYAGES_COLLECTION=${MONGO_TRACKED_VOYAGES_COLLECTION}
-            - MONGO_TRACKED_ASSIGNMENTS_COLLECTION=${MONGO_TRACKED_ASSIGNMENTS_COLLECTION}
-            - MONGO_FBB_SOLVES_COLLECTION=${MONGO_FBB_SOLVES_COLLECTION}
-            - MONGO_FBB_TRIALS_COLLECTION=${MONGO_FBB_TRIALS_COLLECTION}
-            - MONGO_FBB_COLLECTION=${MONGO_FBB_COLLECTION}
-            - CORS_ORIGIN=${CORS_ORIGIN}
         container_name: DCSiteServer 
         deploy:
             restart_policy: 
@@ -141,7 +122,8 @@ services:
             - ${PROFILE_DATA_PATH}:/profiles:rw"
             - ${SQLITE_DB}:/datacore.db
         env_file:
-            - ./conf/site-server.env           
+            - .env
+            - ./conf/site-server.env
         depends_on:
             - pm2-discord
             - datacoredb
@@ -234,10 +216,10 @@ services:
         deploy:
             restart_policy: 
                 condition: on-failure
-        environment:
-            - CPP_TRAIN_PATH=/traindata/train/
-            - CPP_DATA_PATH=/traindata/data/
-            - ASSETS_URL=${BOT_ASSETS_URL}
+        env_file:
+            - .env
+            - ./conf/bot.env
+            - ./conf/cpp-image-analysis.env
         ports:
             - 5000:5000
         volumes:
@@ -268,29 +250,8 @@ services:
             - bot-logs:/data/logs:rw
             - ${PROFILE_DATA_PATH}:/profiles:rw"
             - ${SQLITE_DB}:/datacore.db
-        environment:
-            - PROFILE_DATA_PATH=/profiles/
-            - DB_CONNECTION_STRING=sqlite:/datacore.db
-            - LOG_PATH=/data/logs/
-            - DC_DATA_PATH=/sitebuild/structured
-            - CONFIG_PATH=/data/bot_config.json
-            - INGFLIP_USERNAME=${INGFLIP_USERNAME}
-            - INGFLIP_PASSWORD=${INGFLIP_PASSWORD}
-            - BOT_TOKEN=${BOT_TOKEN}
-            - ASSETS_URL=${BOT_ASSETS_URL}
-            - DATACORE_URL=${BOT_DATACORE_URL}
-            - DEFAULT_GUILD=${DEFAULT_GUILD}
-            - NODE_ENV=${NODE_ENV}
-            - IMAGE_ANALYSIS_URL=http://DCImageAnalysis:5000
-            - MONGO_CONN_STRING=${MONGO_CONN_STRING}
-            - MONGO_DB_NAME=${MONGO_DB_NAME}
-            - MONGO_PROFILE_COLLECTION=${MONGO_PROFILE_COLLECTION}
-            - MONGO_TRACKED_VOYAGES_COLLECTION=${MONGO_TRACKED_VOYAGES_COLLECTION}
-            - MONGO_TRACKED_ASSIGNMENTS_COLLECTION=${MONGO_TRACKED_ASSIGNMENTS_COLLECTION}
-            - MONGO_FBB_SOLVES_COLLECTION=${MONGO_FBB_SOLVES_COLLECTION}
-            - MONGO_FBB_TRIALS_COLLECTION=${MONGO_FBB_TRIALS_COLLECTION}
-            - MONGO_FBB_COLLECTION=${MONGO_FBB_COLLECTION}
         env_file:
+            - .env
             - ./conf/bot.env
         depends_on:
             - cpp-image-analysis
