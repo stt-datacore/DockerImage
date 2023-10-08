@@ -119,7 +119,7 @@ services:
             - "4420:4420"
         volumes:
             - ${LOG_PATH}:/data/logs:rw
-            - ${PROFILE_DATA_PATH}:/profiles:rw"
+            - ${PROFILE_DATA_PATH}:/profiles:rw
             - ${SQLITE_DB}:/datacore.db
         env_file:
             - .env
@@ -245,10 +245,10 @@ services:
             restart_policy: 
                 condition: on-failure
         volumes:
-            - "sitebuild:/sitebuild:ro"
+            - sitebuild:/sitebuild:ro
             - ${ASSETS_DIR}:/data/assets:ro
             - bot-logs:/data/logs:rw
-            - ${PROFILE_DATA_PATH}:/profiles:rw"
+            - ${PROFILE_DATA_PATH}:/profiles:rw
             - ${SQLITE_DB}:/datacore.db
         env_file:
             - .env
