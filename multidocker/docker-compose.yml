@@ -43,9 +43,8 @@ services:
             args:
                 ALPINE_VERSION:
                 NODE_VERSION:
-        environment:
-            GATSBY_ASSETS_URL:
-            GATSBY_DATACORE_URL:
+        env_file:
+            - ./conf/website.env
         deploy:
             restart_policy: 
                 condition: on-failure
@@ -94,14 +93,8 @@ services:
             - site-logs:/data/logs:rw
             - profiles:/data/profiles:rw"
             - ./datacore.db:/database
-        environment:
-            PROFILE_DATA_PATH: /data/profiles
-            LOG_PATH: /data/logs/
-            DB_CONNECTION_STRING:
-            CORS_ORIGIN:
-            BOT_USERNAME:
-            BOT_PASSWORD:
-            JWT_SECRET:            
+        env_file:
+            - ./conf/site-server.env           
         depends_on:
             - pm2-discord
         profiles: ["all", "site-server", "fullstack"]
@@ -174,8 +167,8 @@ services:
             - traindata:/data/traindata:rw
             - nginx-logs:/logs/nginx:ro
             - site-logs:/logs/site-server:ro
-        environment:
-            ROOT_PASSWORD: ${RSYNC_PASSWORD}
+        env_file:
+            - ./conf/rsync.env
         profiles: [ "all", "rsync", "fullstack" ]
 
     cpp-image-analysis:
@@ -220,15 +213,11 @@ services:
             - assets:/assets:ro
         environment:
             PROFILE_DATA_PATH: /data/profiles
-            DB_CONNECTION_STRING: sqlite:/data/datacore.db
             LOG_PATH: /data/logs/
             DC_DATA_PATH: /sitebuild/structured
             CONFIG_PATH: /data/bot_config.json
-            ASSETS_URL: ${GATSBY_ASSETS_URL}
-            DATACORE_URL: ${GATSBY_DATACORE_URL}
-            INGFLIP_USERNAME:
-            INGFLIP_PASSWORD:
-            BOT_TOKEN:
+        env_file:
+            - ./conf/bot.env
         depends_on:
             - cpp-image-analysis
         profiles: ["all", "bot"]
