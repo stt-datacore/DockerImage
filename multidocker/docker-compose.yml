@@ -89,18 +89,9 @@ services:
             - datacore-mongo:/data/db
         env_file:
             - .env
-        profiles: ["all", "site-server", "bot", "fullstack"]
-
-    local-dev-db:
-        image: mongo:4.4.6
-        container_name: local-dev-db
-        volumes:
-            - datacore-mongo:/data/db
         ports:
             - '27017-27019:27017-27019'
-        env_file:
-            - .env
-        profiles: ["local-mongo"]
+        profiles: ["all", "site-server", "bot", "fullstack"]
 
     site-server:
         image: datacore/site-server
