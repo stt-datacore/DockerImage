@@ -68,9 +68,9 @@ WORKDIR /
 # experimental and easy to revert
 
 RUN git clone https://github.com/stt-datacore/cpp-image-analysis.git
-RUN git clone -b discord.js-upgrade-2 https://github.com/stt-datacore/bot.git
+RUN git clone https://github.com/stt-datacore/bot.git
 RUN git clone https://github.com/stt-datacore/asset-server.git
-RUN git clone -b upgrade-node16-only https://github.com/stt-datacore/site-server.git
+RUN git clone https://github.com/stt-datacore/site-server.git
 
 # Build asset parser
 WORKDIR /asset-server
