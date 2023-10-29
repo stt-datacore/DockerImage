@@ -26,8 +26,15 @@ RUN apt-get update && DEBIAN_FRONTEND="noninteractive" apt-get install -y \
 
 RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 10
 
-RUN curl -sL https://deb.nodesource.com/setup_14.x | bash -
-RUN apt-get install -y nodejs
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash
+# RUN curl -sL https://deb.nodesource.com/setup_16.x | bash -
+# RUN apt-get install -y nodejs
+ARG node_version=v16.20.2
+RUN cd /opt \
+ && curl -LO https://nodejs.org/dist/${node_version}/node-${node_version}-linux-x64.tar.xz \
+ && tar xJf node-${node_version}-linux-x64.tar.xz \
+ && rm node-${node_version}-linux-x64.tar.xz
+ENV PATH=/opt/node-${node_version}-linux-x64/bin:${PATH}
 
 WORKDIR /
 
@@ -50,9 +57,9 @@ COPY dataorig /dataorig/
 WORKDIR /
 #RUN git clone https://github.com/stt-datacore/website.git #- run script should do this
 RUN git clone https://github.com/stt-datacore/cpp-image-analysis.git
-RUN git clone https://github.com/stt-datacore/bot.git
+RUN git clone -b discord.js-upgrade-2 https://github.com/stt-datacore/bot.git
 RUN git clone https://github.com/stt-datacore/asset-server.git
-RUN git clone https://github.com/stt-datacore/site-server.git
+RUN git clone -b upgrade-node16-only https://github.com/stt-datacore/site-server.git
 
 # Build asset parser
 WORKDIR /asset-server
@@ -95,6 +102,7 @@ RUN make -j$(nproc)
 #RUN mv /asset-server/out/* /dataorig/asset-server/
 #RUN rm -rf /asset-server/out
 #RUN ln -s /data/asset-server /asset-server/out
-
+RUN echo Node Version
+RUN node --version
 COPY ./runme.sh /runme.sh
 ENTRYPOINT /runme.sh
