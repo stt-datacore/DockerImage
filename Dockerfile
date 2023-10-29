@@ -26,15 +26,23 @@ RUN apt-get update && DEBIAN_FRONTEND="noninteractive" apt-get install -y \
 
 RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 10
 
-RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash
+## begin node
+
+## old node install commands
+
 # RUN curl -sL https://deb.nodesource.com/setup_16.x | bash -
 # RUN apt-get install -y nodejs
+
+## new node install commands
+
 ARG node_version=v16.20.2
 RUN cd /opt \
  && curl -LO https://nodejs.org/dist/${node_version}/node-${node_version}-linux-x64.tar.xz \
  && tar xJf node-${node_version}-linux-x64.tar.xz \
  && rm node-${node_version}-linux-x64.tar.xz
 ENV PATH=/opt/node-${node_version}-linux-x64/bin:${PATH}
+
+## end node
 
 WORKDIR /
 
@@ -56,6 +64,9 @@ COPY dataorig /dataorig/
 # Clone repos
 WORKDIR /
 #RUN git clone https://github.com/stt-datacore/website.git #- run script should do this
+
+# experimental and easy to revert
+
 RUN git clone https://github.com/stt-datacore/cpp-image-analysis.git
 RUN git clone -b discord.js-upgrade-2 https://github.com/stt-datacore/bot.git
 RUN git clone https://github.com/stt-datacore/asset-server.git
