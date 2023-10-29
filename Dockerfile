@@ -30,7 +30,7 @@ RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 10
 
 ## old node install commands
 
-# RUN curl -sL https://deb.nodesource.com/setup_16.x | bash -
+# RUN curl -sL https://deb.nodesource.com/setup_14.x | bash -
 # RUN apt-get install -y nodejs
 
 ## new node install commands
