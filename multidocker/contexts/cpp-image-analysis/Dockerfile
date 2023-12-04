@@ -6,7 +6,14 @@ ENV LANG=C.UTF-8
 WORKDIR /usr/src/dcimageanalysis
 COPY --from=source . .
 
+WORKDIR /traindata
+RUN mkdir train
+RUN cp /usr/src/dcimageanalysis/data . -r
+
+WORKDIR /usr/src/dcimageanalysis
+
 RUN apk add --no-cache --virtual .build \
+  curl \
   build-base \
   pkgconfig \
   cmake \
@@ -50,4 +57,5 @@ WORKDIR /usr/src/dcimageanalysis/build
 CMD ./imserver
 
 FROM development as production
-CMD pm2-runtime start "./imserver --jsonpath=/website/public_web/structured/ --trainpath=/data/train/ --datapath=/cpp-image-analysis/data/ --asseturl=https://assets.datacore.app/" --name "imageAnalysis"
+
+CMD pm2-runtime start "./imserver --jsonpath=/sitebuild/structured/ --trainpath=$CPP_TRAIN_PATH --datapath=$CPP_DATA_PATH --asseturl=$ASSETS_URL" --name "imageAnalysis"

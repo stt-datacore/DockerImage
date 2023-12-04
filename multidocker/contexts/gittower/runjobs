@@ -13,3 +13,4 @@ do
     git fetch
     git status|grep "is behind" && reload ${dir##*/}
 done
+echo gittower waiting ...
