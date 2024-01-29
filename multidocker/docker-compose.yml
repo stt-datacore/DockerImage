@@ -9,6 +9,8 @@ volumes:
     bot-logs:
     datacore-mongo:
     sqlite:
+    wiki:
+    mariadb:
 
 services:
     gittower:
@@ -140,6 +142,33 @@ services:
             - site-server
             - datacoredb
         profiles: [ "all", "website", "asset-server", "site-server", "fullstack", "bot" ]
+
+    mediawiki:
+        image: mediawiki
+        container_name: MediaWiki
+        deploy:
+            restart_policy: 
+                condition: on-failure
+        volumes:
+            - wiki:/var/www/html:rw
+        ports:
+            - 8290:80
+        links:
+            - database
+        profiles: [ "all", "wiki" ]
+
+    database:
+        image: mariadb
+        restart: always
+        environment:
+            # @see https://phabricator.wikimedia.org/source/mediawiki/browse/master/includes/DefaultSettings.php
+            MYSQL_DATABASE: my_wiki
+            MYSQL_USER: wikiuser
+            MYSQL_PASSWORD: example
+            MYSQL_RANDOM_ROOT_PASSWORD: 'yes'
+        volumes:
+            - mariadb:/var/lib/mysql
+        profiles: [ "all", "wiki" ]
 
     node_exporter:
         image: prom/node-exporter
