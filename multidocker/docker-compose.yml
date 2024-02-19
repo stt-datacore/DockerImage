@@ -33,6 +33,7 @@ services:
 
     pm2-discord:
         image: datacore/pm2-discord
+        container_name: pm2-discord-base
         build: 
             context: contexts/pm2-discord
             args:
@@ -110,7 +111,7 @@ services:
             restart_policy: 
                 condition: on-failure
         ports:
-            - "4420:4420"
+            - "4420:4420"        
         volumes:
             - site-logs:/data/logs:rw
             - profiles:/profiles:rw
@@ -160,6 +161,7 @@ services:
     database:
         image: mariadb
         restart: always
+        container_name: wiki-mariadb
         environment:
             # @see https://phabricator.wikimedia.org/source/mediawiki/browse/master/includes/DefaultSettings.php
             MYSQL_DATABASE: my_wiki
@@ -229,6 +231,7 @@ services:
         image: datacore/cpp-image-analysis
         build: 
             context: contexts/cpp-image-analysis
+            target: ${BUILD_TYPE}
             additional_contexts:
                 source: https://github.com/stt-datacore/cpp-image-analysis.git#${CPP_BRANCH}
             args:

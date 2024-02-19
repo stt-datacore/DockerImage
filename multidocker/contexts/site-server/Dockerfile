@@ -9,4 +9,5 @@ RUN npm run build
 CMD npm run start
 
 FROM development as production
+RUN pm2 set pm2-discord-webhook:process_name site-server
 CMD pm2-runtime --name server start npm -- start

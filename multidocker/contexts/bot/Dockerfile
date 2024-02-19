@@ -11,4 +11,5 @@ COPY bot_config.json /data/
 CMD npm run start
 
 FROM development as production
+RUN pm2 set pm2-discord-webhook:process_name bot
 CMD pm2-runtime --name bot start npm -- start

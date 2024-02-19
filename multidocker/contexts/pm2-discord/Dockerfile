@@ -1,7 +1,9 @@
 ARG ALPINE_VERSION
 ARG NODE_VERSION
 FROM node:${NODE_VERSION}-alpine${ALPINE_VERSION}
- 
+
+COPY discord-setup.sh .
+
 RUN npm install pm2 -g
 RUN pm2 install pm2-discord-webhook
 

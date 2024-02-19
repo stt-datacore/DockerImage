@@ -57,5 +57,5 @@ WORKDIR /usr/src/dcimageanalysis/build
 CMD ./imserver
 
 FROM development as production
-
+RUN pm2 set pm2-discord-webhook:process_name imageAnalysis
 CMD pm2-runtime start "./imserver --jsonpath=/sitebuild/structured/ --trainpath=$CPP_TRAIN_PATH --datapath=$CPP_DATA_PATH --asseturl=$ASSETS_URL" --name "imageAnalysis"
