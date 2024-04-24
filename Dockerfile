@@ -35,7 +35,7 @@ RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 10
 
 ## new node install commands
 
-ARG node_version=v16.20.2
+ARG node_version=v18.20.2
 RUN cd /opt \
  && curl -LO https://nodejs.org/dist/${node_version}/node-${node_version}-linux-x64.tar.xz \
  && tar xJf node-${node_version}-linux-x64.tar.xz \
