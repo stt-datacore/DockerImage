@@ -70,7 +70,7 @@ WORKDIR /
 RUN git clone https://github.com/stt-datacore/cpp-image-analysis.git
 RUN git clone https://github.com/stt-datacore/bot.git
 RUN git clone https://github.com/stt-datacore/asset-server.git
-RUN git clone https://github.com/stt-datacore/site-server.git
+RUN git clone https://github.com/stt-datacore/site-server.git -b sqlite-overhaul
 
 # Build asset parser
 WORKDIR /asset-server
