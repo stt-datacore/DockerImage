@@ -14,15 +14,15 @@ volumes:
 services:
     gittower:
         image: datacore/gittower
-        build: 
+        build:
             context: contexts/gittower
             args:
                 ALPINE_VERSION: ${ALPINE_VERSION}
                 NODE_VERSION: ${NODE_VERSION}
         deploy:
-            restart_policy: 
+            restart_policy:
                 condition: on-failure
-        container_name: gittower  
+        container_name: gittower
         env_file:
             - .env
         volumes:
@@ -33,7 +33,7 @@ services:
     pm2-discord:
         image: datacore/pm2-discord
         container_name: pm2-discord-base
-        build: 
+        build:
             context: contexts/pm2-discord
             args:
                 ALPINE_VERSION: ${ALPINE_VERSION}
@@ -43,7 +43,7 @@ services:
         env_file:
             - .env
         profiles: ["all", "fullstack", "site-server", "website", "bot"]
-        
+
     website:
         build:
             context: contexts/website
@@ -51,15 +51,15 @@ services:
                 source: https://github.com/stt-datacore/website.git#${WEBSITE_BRANCH}
             args:
                 ALPINE_VERSION: ${ALPINE_VERSION}
-                NODE_VERSION: ${NODE_VERSION}                       
+                NODE_VERSION: ${NODE_VERSION}
         env_file:
             - .env
             - ./conf/website.env
         deploy:
-            restart_policy: 
+            restart_policy:
                 condition: on-failure
-                
-        container_name: DCWebsite  
+
+        container_name: DCWebsite
         volumes:
             - sitebuild:/sitebuild:rw
         profiles: [ "all", "website", "asset-server", "site-server", "fullstack" ]
@@ -67,16 +67,16 @@ services:
     asset-server:
         image: datacore/asset-server
         build:
-            context: contexts/asset-server 
+            context: contexts/asset-server
             additional_contexts:
                 source: https://github.com/stt-datacore/asset-server.git#${ASSET_BRANCH}
             args:
-                ALPINE_VERSION: ${ALPINE_VERSION} 
+                ALPINE_VERSION: ${ALPINE_VERSION}
                 NODE_VERSION: ${NODE_VERSION}
 
-        container_name: DCAssetServer 
+        container_name: DCAssetServer
         deploy:
-            restart_policy: 
+            restart_policy:
                 condition: on-failure
         volumes:
             - assets:/assets:rw
@@ -99,18 +99,18 @@ services:
         image: datacore/site-server
         build:
             context: contexts/site-server
-            additional_contexts: 
+            additional_contexts:
                 source: https://github.com/stt-datacore/site-server.git#${SERVER_BRANCH}
                 pm2-discord: contexts/pm2-discord
             target: ${BUILD_TYPE}
             args:
                 $NODE_VERSION:
-        container_name: DCSiteServer 
+        container_name: DCSiteServer
         deploy:
-            restart_policy: 
+            restart_policy:
                 condition: on-failure
         ports:
-            - "4420:4420"        
+            - "4420:4420"
         volumes:
             - site-logs:/data/logs:rw
             - profiles:/profiles:rw
@@ -147,7 +147,7 @@ services:
         image: mediawiki
         container_name: MediaWiki
         deploy:
-            restart_policy: 
+            restart_policy:
                 condition: on-failure
         volumes:
             - wiki:/var/www/html:rw
@@ -183,7 +183,7 @@ services:
         container_name: prometheus
         ports:
             - "9090:9090"
-        command: 
+        command:
             - --config.file=/etc/prometheus/prometheus.yml
         volumes:
             - ./contexts/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
@@ -195,7 +195,7 @@ services:
         image: gcr.io/cadvisor/cadvisor:latest
         container_name: cadvisor
         deploy:
-            restart_policy: 
+            restart_policy:
                 condition: on-failure
         ports:
             - "8080:8080"
@@ -204,14 +204,14 @@ services:
             - /var/run:/var/run:rw
             - /sys:/sys:ro
             - /var/lib/docker/:/var/lib/docker:ro
-        command: [ "--housekeeping_interval=30s", "--docker_only", "--disable_metrics=disk,network,tcp,udp,percpu,sched,process" ] 
+        command: [ "--housekeeping_interval=30s", "--docker_only", "--disable_metrics=disk,network,tcp,udp,percpu,sched,process" ]
         profiles: [ "all", "monitoring", "fullstack" ]
 
     rsync-host:
         image: hermsi/alpine-sshd
         container_name: RSyncHost
         deploy:
-            restart_policy: 
+            restart_policy:
                 condition: on-failure
         ports:
             - "1337:22"
@@ -228,16 +228,16 @@ services:
 
     cpp-image-analysis:
         image: datacore/cpp-image-analysis
-        build: 
+        build:
             context: contexts/cpp-image-analysis
-            target: ${BUILD_TYPE}
+            # target: ${BUILD_TYPE}
             additional_contexts:
                 source: https://github.com/stt-datacore/cpp-image-analysis.git#${CPP_BRANCH}
             args:
                 ALPINE_VERSION:
-        container_name: DCImageAnalysis 
+        container_name: DCImageAnalysis
         deploy:
-            restart_policy: 
+            restart_policy:
                 condition: on-failure
         env_file:
             - .env
@@ -254,18 +254,18 @@ services:
             - website
         profiles: [ "all", "bot" ]
 
-    bot: 
+    bot:
         image: datacore/bot
         build:
             context: contexts/bot
-            additional_contexts: 
+            additional_contexts:
                 source: https://github.com/stt-datacore/bot.git#${BOT_BRANCH}
             target: ${BUILD_TYPE}
             args:
                 NODE_VERSION:
         container_name: DCBot
         deploy:
-            restart_policy: 
+            restart_policy:
                 condition: on-failure
         volumes:
             - sitebuild:/sitebuild:ro
