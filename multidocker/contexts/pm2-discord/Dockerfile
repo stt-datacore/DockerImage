@@ -1,6 +1,33 @@
-ARG ALPINE_VERSION
-ARG NODE_VERSION
-FROM node:${NODE_VERSION}-alpine${ALPINE_VERSION}
+FROM ubuntu:20.04
+
+RUN apt-get update && DEBIAN_FRONTEND="noninteractive" apt-get install -y \
+    apt-transport-https \
+    software-properties-common \
+    wget \
+    unzip \
+    curl \
+    ca-certificates \
+    build-essential \
+    checkinstall \
+    cmake \
+    pkg-config \
+    yasm \
+    git \
+    nano \
+    cron \
+    dialog \
+    net-tools \
+    openssl \
+    libssl-dev
+
+RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 10
+
+ARG node_version=v18.20.2
+RUN cd /opt \
+ && curl -LO https://nodejs.org/dist/${node_version}/node-${node_version}-linux-x64.tar.xz \
+ && tar xJf node-${node_version}-linux-x64.tar.xz \
+ && rm node-${node_version}-linux-x64.tar.xz
+ENV PATH=/opt/node-${node_version}-linux-x64/bin:${PATH}
 
 COPY discord-setup.sh .
 
