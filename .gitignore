@@ -1,1 +1,3 @@
 data
+.env
+multidocker/conf
