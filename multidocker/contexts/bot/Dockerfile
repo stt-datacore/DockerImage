@@ -11,4 +11,4 @@ COPY bot_config.json /data/
 CMD npm run start
 
 FROM development as production
-CMD pm2-runtime --name server start npm -- start
+CMD pm2-runtime --name bot start npm -- start
