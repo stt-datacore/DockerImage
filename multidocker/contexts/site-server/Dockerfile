@@ -1,5 +1,5 @@
 FROM datacore/pm2-discord as development
-RUN apk add python3 build-base sqlite
+RUN apt-get install -y python3 sqlite
 RUN mkdir /app
 WORKDIR /app
 COPY --from=source package.json package-lock.json ./
