@@ -121,7 +121,7 @@ services:
             - ./conf/site-server.env
         depends_on:
             - pm2-discord
-            - datacoredb
+            # - datacoredb
         profiles: ["all", "site-server", "fullstack", "bot"]
 
     nginx:
@@ -280,5 +280,5 @@ services:
             - ./conf/bot.env
         depends_on:
             - cpp-image-analysis
-            - datacoredb
+            # - datacoredb
         profiles: ["all", "bot"]
