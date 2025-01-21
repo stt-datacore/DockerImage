@@ -206,7 +206,7 @@ services:
             - /var/run:/var/run:rw
             - /sys:/sys:ro
             - /var/lib/docker/:/var/lib/docker:ro
-        command: [ "--housekeeping_interval=30s", "--docker_only", "--disable_metrics=disk,network,tcp,udp,percpu,sched,process" ]
+        command: [ "--housekeeping_interval=30s", "--docker_only", "--disable_metrics=referenced_memory,disk,network,tcp,udp,percpu,sched,process" ]
         profiles: [ "all", "monitoring", "fullstack" ]
 
     rsync-host:
