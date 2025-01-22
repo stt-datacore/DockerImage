@@ -31,39 +31,58 @@ real_ip_header X-Forwarded-For;
 # Redirect all HTTP traffic to HTTPS
 server {
 	listen 80;
-	server_name datacore.app;
+	server_name test.datacore.app;
 	return 301 https://$host$request_uri;
 }
 
+upstream my_http_servers {
+	# load balance with 2 node runners
+	ip_hash;
+	server 0.0.0.0:4420;
+	# server 0.0.0.0:4431;
+}
 
 server {
-	listen 443 ssl;
-	listen [::]:443 ssl;
+	listen 443 ssl http2;
+	listen [::]:443 ssl http2;
 
 	server_name datacore.app;
 
 	ssl_certificate      /data/cert.pem;
 	ssl_certificate_key  /data/privkey.pem;
 
-    location / {
-        root /sitebuild;
-        expires 1h;
-    }
+	add_header X-XSS-Protection "1; mode=block";
+	add_header X-Content-Type-Options "nosniff";
+	add_header Strict-Transport-Security "max-age=63072000";
+	add_header Content-Security-Policy "object-src 'none'; frame-ancestors 'none'";
 
-    location /assets/ {
-        root /assets;
-        access_log off;
-        expires max;
-    }
+        index index.html index.htm;
 
-    location /assets/data/ {
-        root /assets/data/;
-        expires 1h;
-    }
+        location / {
+		root /sitebuild;
+		expires 1h;
+                try_files $uri $uri/ @app;
+        }
 
-    location /profiles/ {
+	location /eventlogs/ {
+		alias /data/events/;
 		expires -1;
-		alias /profiles/;
+	}
+
+        location /assets/ {
+                alias /data/assets/assets/;
+                access_log off;
+                expires max;
+        }
+
+        location /assets/data/ {
+                alias /data/assets/data/;
+                expires -1;
+        }
+
+	location /profiles/ {
+		expires -1;
+		alias /data/profiles/;
 
 		if ($request_method = 'OPTIONS') {
 			add_header 'Access-Control-Allow-Origin' '*';
@@ -82,21 +101,14 @@ server {
 		}
 	}
 
-    location /api/ {
-        proxy_pass http://DCSiteServer:4420;
-        expires -1;
-    }
-
-    location /bigbook/ {
-        return 301 https://bigbook.app;
-    }
-
-    location /bigbook2/ {
-        return 301 https://bigbook.app;
-    }
-
-    location /bb/ {
-        return 301 https://bigbook.app;
-    }
-
+	location @app {
+		proxy_pass http://my_http_servers;
+		proxy_http_version 1.1;
+		proxy_set_header Upgrade $http_upgrade;
+		proxy_set_header Connection 'upgrade';
+		proxy_set_header Host $host;
+		proxy_cache_bypass $http_upgrade;
+		proxy_set_header X-Real-IP $remote_addr;
+		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+	}
 }
