@@ -142,7 +142,7 @@ services:
                 condition: on-failure
         ports:
             - "80:80"
-            - "442:442"
+            - "443:443"
         volumes:
             - sitebuild:/sitebuild:ro
             - assets:/assets:ro
