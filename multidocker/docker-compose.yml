@@ -3,12 +3,22 @@ volumes:
     config:
     assets:
     profiles:
+        driver: local
+        driver_opts:
+            type: ext4
+            o: bind
+            device: ${PROFILES_FOLDER}
     traindata:
     nginx-logs:
     site-logs:
     bot-logs:
     datacore-mongo:
     sqlite:
+        driver: local
+        driver_opts:
+            type: ext4
+            o: bind
+            device: ${SQLITE_FOLDER}
     wiki:
     mariadb:
 
