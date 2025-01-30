@@ -2,7 +2,7 @@ FROM node:18-alpine
 RUN apk add bash python3 build-base
 RUN mkdir /app
 WORKDIR /app
-RUN echo */30 * * * * /app/exec.sh > crontab
+RUN echo 0 */1 * * * /app/exec.sh > crontab
 RUN crontab ./crontab
 COPY --from=source package.json package-lock.json ./
 RUN npm install
