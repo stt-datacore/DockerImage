@@ -183,60 +183,60 @@ services:
     #         - mariadb:/var/lib/mysql
     #     profiles: [ "all", "wiki" ]
 
-    node_exporter:
-        image: prom/node-exporter
-        container_name: node_exporter
-        ports:
-            - "9100:9100"
-        profiles: [ "all", "monitoring", "fullstack" ]
+    # node_exporter:
+    #     image: prom/node-exporter
+    #     container_name: node_exporter
+    #     ports:
+    #         - "9100:9100"
+    #     profiles: [ "all", "monitoring", "fullstack" ]
 
-    prometheus:
-        image: prom/prometheus:latest
-        container_name: prometheus
-        ports:
-            - "9090:9090"
-        command:
-            - --config.file=/etc/prometheus/prometheus.yml
-        volumes:
-            - ./contexts/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
-        depends_on:
-            - cadvisor
-        profiles: [ "all", "monitoring", "fullstack" ]
+    # prometheus:
+    #     image: prom/prometheus:latest
+    #     container_name: prometheus
+    #     ports:
+    #         - "9090:9090"
+    #     command:
+    #         - --config.file=/etc/prometheus/prometheus.yml
+    #     volumes:
+    #         - ./contexts/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    #     depends_on:
+    #         - cadvisor
+    #     profiles: [ "all", "monitoring", "fullstack" ]
 
-    cadvisor:
-        image: gcr.io/cadvisor/cadvisor:latest
-        container_name: cadvisor
-        deploy:
-            restart_policy:
-                condition: on-failure
-        ports:
-            - "8080:8080"
-        volumes:
-            - /:/rootfs:ro
-            - /var/run:/var/run:rw
-            - /sys:/sys:ro
-            - /var/lib/docker/:/var/lib/docker:ro
-        command: [ "--housekeeping_interval=30s", "--docker_only", "--disable_metrics=referenced_memory,disk,network,tcp,udp,percpu,sched,process" ]
-        profiles: [ "all", "monitoring", "fullstack" ]
+    # cadvisor:
+    #     image: gcr.io/cadvisor/cadvisor:latest
+    #     container_name: cadvisor
+    #     deploy:
+    #         restart_policy:
+    #             condition: on-failure
+    #     ports:
+    #         - "8080:8080"
+    #     volumes:
+    #         - /:/rootfs:ro
+    #         - /var/run:/var/run:rw
+    #         - /sys:/sys:ro
+    #         - /var/lib/docker/:/var/lib/docker:ro
+    #     command: [ "--housekeeping_interval=30s", "--docker_only", "--disable_metrics=referenced_memory,disk,network,tcp,udp,percpu,sched,process" ]
+    #     profiles: [ "all", "monitoring", "fullstack" ]
 
-    rsync-host:
-        image: hermsi/alpine-sshd
-        container_name: RSyncHost
-        deploy:
-            restart_policy:
-                condition: on-failure
-        ports:
-            - "1337:22"
-        volumes:
-            - sitebuild:/sitebuild:rw
-            - assets:/data/assets:ro
-            - profiles:/profiles:rw
-            - traindata:/data/traindata:rw
-            - nginx-logs:/logs/nginx:ro
-            - site-logs:/logs/site-server:ro
-        env_file:
-            - ./conf/rsync.env
-        profiles: [ "all", "rsync", "fullstack" ]
+    # rsync-host:
+    #     image: hermsi/alpine-sshd
+    #     container_name: RSyncHost
+    #     deploy:
+    #         restart_policy:
+    #             condition: on-failure
+    #     ports:
+    #         - "1337:22"
+    #     volumes:
+    #         - sitebuild:/sitebuild:rw
+    #         - assets:/data/assets:ro
+    #         - profiles:/profiles:rw
+    #         - traindata:/data/traindata:rw
+    #         - nginx-logs:/logs/nginx:ro
+    #         - site-logs:/logs/site-server:ro
+    #     env_file:
+    #         - ./conf/rsync.env
+    #     profiles: [ "all", "rsync", "fullstack" ]
 
     cpp-image-analysis:
         image: datacore/cpp-image-analysis
