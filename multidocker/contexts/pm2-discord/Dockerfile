@@ -22,7 +22,7 @@ RUN apt-get update && DEBIAN_FRONTEND="noninteractive" apt-get install -y \
 
 RUN update-alternatives --install /usr/bin/python python /usr/bin/python3 10
 
-ARG node_version=v18.20.2
+ARG node_version=v18.20.6
 RUN cd /opt \
  && curl -LO https://nodejs.org/dist/${node_version}/node-${node_version}-linux-x64.tar.xz \
  && tar xJf node-${node_version}-linux-x64.tar.xz \
