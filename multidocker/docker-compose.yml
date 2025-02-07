@@ -19,6 +19,12 @@ volumes:
             type: ext4
             o: bind
             device: ${SQLITE_FOLDER}
+    grafana-data:
+        driver: local
+        driver_opts:
+            type: ext4
+            o: bind
+            device: ${GRAFANA_FOLDER}
     wiki:
     mariadb:
 
@@ -190,18 +196,14 @@ services:
     #         - "9100:9100"
     #     profiles: [ "all", "monitoring", "fullstack" ]
 
-    # prometheus:
-    #     image: prom/prometheus:latest
-    #     container_name: prometheus
-    #     ports:
-    #         - "9090:9090"
-    #     command:
-    #         - --config.file=/etc/prometheus/prometheus.yml
-    #     volumes:
-    #         - ./contexts/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
-    #     depends_on:
-    #         - cadvisor
-    #     profiles: [ "all", "monitoring", "fullstack" ]
+    grafana:
+        image: grafana/grafana-enterprise:latest
+        container_name: grafana
+        ports:
+            - "3000:3000"
+        volumes:
+            - grafana-data:/var/lib/grafana
+        profiles: [ "all", "monitoring", "fullstack" ]
 
     # cadvisor:
     #     image: gcr.io/cadvisor/cadvisor:latest
