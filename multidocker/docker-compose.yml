@@ -202,7 +202,7 @@ services:
         ports:
             - "3000:3000"
         volumes:
-            - grafana-data:/var/lib/grafana
+            - grafana-data:/var/lib/grafana:rw
         profiles: [ "all", "monitoring", "fullstack" ]
 
     # cadvisor:
