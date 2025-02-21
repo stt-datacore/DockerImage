@@ -84,7 +84,7 @@ services:
         container_name: DCWebsite
         volumes:
             - sitebuild:/sitebuild:rw
-        profiles: [ "website" ]
+        profiles: [ "website-build" ]
 
     asset-server:
         image: datacore/asset-server
