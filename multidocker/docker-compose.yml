@@ -285,7 +285,7 @@ services:
         depends_on:
             - pm2-discord
             - nginx
-            - website
+            # - website
         profiles: [ "all", "bot" ]
 
     bot:
