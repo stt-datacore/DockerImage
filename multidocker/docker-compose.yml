@@ -84,7 +84,7 @@ services:
         container_name: DCWebsite
         volumes:
             - sitebuild:/sitebuild:rw
-        profiles: [ "website-build" ]
+        profiles: [ "website-build", "all", "website", "fullstack", "full-stack" ]
 
     asset-server:
         image: datacore/asset-server
@@ -285,7 +285,7 @@ services:
         depends_on:
             - pm2-discord
             - nginx
-            # - website
+            - website
         profiles: [ "all", "bot" ]
 
     bot:
