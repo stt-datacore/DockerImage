@@ -2,7 +2,7 @@
 
 BASE_URL=https://github.com/stt-datacore/
 
-./watch website ${BASE_URL}website.git ${WEBSITE_BRANCH}
+# ./watch website ${BASE_URL}website.git ${WEBSITE_BRANCH}
 ./watch site-server ${BASE_URL}site-server.git ${SERVER_BRANCH}
 ./watch asset-server ${BASE_URL}asset-server.git ${ASSET_BRANCH}
 ./watch bot ${BASE_URL}bot.git ${BOT_BRANCH}

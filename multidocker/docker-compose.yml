@@ -1,5 +1,10 @@
 volumes:
     sitebuild:
+        driver: local
+        driver_opts:
+            type: ext4
+            o: bind
+            device: ${WEBSITE_FOLDER}
     config:
     assets:
     profiles:
