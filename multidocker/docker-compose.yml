@@ -66,25 +66,25 @@ services:
             - .env
         profiles: ["all", "fullstack", "site-server", "website", "bot"]
 
-    # website:
-    #     build:
-    #         context: contexts/website
-    #         additional_contexts:
-    #             source: https://github.com/stt-datacore/website.git#${WEBSITE_BRANCH}
-    #         args:
-    #             ALPINE_VERSION: ${ALPINE_VERSION}
-    #             NODE_VERSION: ${NODE_VERSION}
-    #     env_file:
-    #         - .env
-    #         - ./conf/website.env
-    #     deploy:
-    #         restart_policy:
-    #             condition: on-failure
+    website:
+        build:
+            context: contexts/website
+            additional_contexts:
+                source: https://github.com/stt-datacore/website.git#${WEBSITE_BRANCH}
+            args:
+                ALPINE_VERSION: ${ALPINE_VERSION}
+                NODE_VERSION: ${NODE_VERSION}
+        env_file:
+            - .env
+            - ./conf/website.env
+        deploy:
+            restart_policy:
+                condition: on-failure
 
-    #     container_name: DCWebsite
-    #     volumes:
-    #         - sitebuild:/sitebuild:rw
-    #     profiles: [ "all", "website", "asset-server", "site-server", "fullstack" ]
+        container_name: DCWebsite
+        volumes:
+            - sitebuild:/sitebuild:rw
+        profiles: [ "website" ]
 
     asset-server:
         image: datacore/asset-server
