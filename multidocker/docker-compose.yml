@@ -104,6 +104,7 @@ services:
             - assets:/assets:rw
         environment:
             - OUT_PATH=/assets/
+            - ASSET_ENV=${ASSET_ENV}
         profiles: [ "all", "asset-server", "website", "fullstack" ]
 
     # datacoredb:
