@@ -1,5 +1,11 @@
 FROM node:18-alpine
 RUN apk add bash python3 build-base
+RUN mkdir /utils
+WORKDIR /utils
+COPY --from=utils package.json package-lock.json ./
+RUN npm install
+COPY --from=utils . .
+RUN npm run build
 RUN mkdir /app
 WORKDIR /app
 RUN echo */30 * * * * /app/exec.sh > crontab

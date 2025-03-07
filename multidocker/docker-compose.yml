@@ -97,10 +97,13 @@ services:
             context: contexts/asset-server
             additional_contexts:
                 source: https://github.com/stt-datacore/asset-server.git#${ASSET_BRANCH}
+                utils: ${UTILS_REPO}#${UTILS_BRANCH}
+                utils2: ${UTILS2_REPO}#${UTILS2_BRANCH}
             args:
                 ALPINE_VERSION: ${ALPINE_VERSION}
                 NODE_VERSION: ${NODE_VERSION}
-
+            ssh:
+                "default": ${UTILS_SSH_KEY}
         container_name: DCAssetServer
         deploy:
             restart_policy:
