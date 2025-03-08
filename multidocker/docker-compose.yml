@@ -91,7 +91,7 @@ services:
         volumes:
             - website-code:/app:rw
             - sitebuild:/sitebuild:rw
-        profiles: [ "website-build", "all", "website", "fullstack", "full-stack" ]
+        profiles: [ "website-build", "all", "asset-server", "website", "fullstack", "full-stack" ]
 
     asset-server:
         image: datacore/asset-server
@@ -99,23 +99,35 @@ services:
             context: contexts/asset-server
             additional_contexts:
                 source: https://github.com/stt-datacore/asset-server.git#${ASSET_BRANCH}
-                utils: ${UTILS_REPO}#${UTILS_BRANCH}
-                utils2: ${UTILS2_REPO}#${UTILS2_BRANCH}
+                website: https://github.com/stt-datacore/website.git#${WEBSITE_BRANCH}
+                ssh_path: ${UTILS_SSH_PATH}
             args:
                 ALPINE_VERSION: ${ALPINE_VERSION}
                 NODE_VERSION: ${NODE_VERSION}
+                SSH_KEY: ${UTILS_KEY_NAME}
+                UTILS_REPO: ${UTILS_REPO}
+                UTILS_BRANCH: ${UTILS_BRANCH}
+                UTILS_DIR: ${UTILS_DIR}
+                UTILS2_REPO: ${UTILS2_REPO}
+                UTILS2_BRANCH: ${UTILS2_BRANCH}
+                UTILS2_DIR: ${UTILS2_DIR}
             ssh:
-                "default": ${UTILS_SSH_KEY}
+                "default": ${UTILS_SSH_PATH}/${UTILS_KEY_NAME}
         container_name: DCAssetServer
         deploy:
             restart_policy:
                 condition: on-failure
         volumes:
+            - ${UTILS_SSH_PATH}:/root/.ssh
             - website-code:/website:rw
             - assets:/assets:rw
         environment:
             - OUT_PATH=/assets/
             - ASSET_ENV=${ASSET_ENV}
+        env_file:
+            - ./conf/assets.env
+        depends_on:
+            - website
         profiles: [ "all", "asset-server", "website", "fullstack" ]
 
     # datacoredb:

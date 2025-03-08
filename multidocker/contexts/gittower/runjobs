@@ -3,6 +3,9 @@
 function reload {
     git pull
     docker-compose -f /docker/docker-compose.yml -p multidocker up $1 --build -d
+    if [ "$1" == "website" ]; then
+        docker-compose -f /docker/docker-compose.yml -p multidocker up asset-server --build -d
+    fi
 }
 
 for dir in /app/*/     # list directories in the form "/app/dirname/"
