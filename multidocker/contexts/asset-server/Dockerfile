@@ -33,7 +33,7 @@ RUN git config core.sshCommand 'ssh -i /root/.ssh/${SSH_KEY}'
 RUN mkdir /app
 WORKDIR /app
 RUN echo */30 * * * * /app/utils_exec.sh > crontab
-RUN echo 40 5,17 * * * /util/utils_major.sh >> crontab
+RUN echo 40 5,17 * * * /utils/utils_major.sh >> crontab
 RUN crontab ./crontab
 COPY --from=source package.json package-lock.json ./
 RUN npm install
