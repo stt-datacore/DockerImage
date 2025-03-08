@@ -23,6 +23,7 @@ volumes:
     site-logs:
     bot-logs:
     datacore-mongo:
+    website-code:
     sqlite:
         driver: local
         driver_opts:
@@ -88,6 +89,7 @@ services:
 
         container_name: DCWebsite
         volumes:
+            - website-code:/app:rw
             - sitebuild:/sitebuild:rw
         profiles: [ "website-build", "all", "website", "fullstack", "full-stack" ]
 
@@ -109,6 +111,7 @@ services:
             restart_policy:
                 condition: on-failure
         volumes:
+            - website-code:/website:rw
             - assets:/assets:rw
         environment:
             - OUT_PATH=/assets/
