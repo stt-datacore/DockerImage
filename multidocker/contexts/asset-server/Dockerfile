@@ -21,6 +21,8 @@ WORKDIR /utils
 RUN git checkout ${UTILS_BRANCH}
 RUN git config core.sshCommand 'ssh -i /root/.ssh/${SSH_KEY}'
 RUN npm install
+RUN chmod 755 ./utils_minor.sh
+RUN chmod 755 ./utils_major.sh
 WORKDIR /
 RUN GIT_SSH_COMMAND='ssh -i /root/.ssh/${SSH_KEY} -o IdentitiesOnly=yes' git clone ${UTILS2_REPO}
 RUN mv /${UTILS2_DIR} /utils2
