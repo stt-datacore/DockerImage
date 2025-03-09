@@ -149,8 +149,6 @@ services:
             - ASSET_ENV=${ASSET_ENV}
         env_file:
             - ./conf/assets.env
-        depends_on:
-            - website
         profiles: [ "all", "asset-server", "website", "fullstack" ]
 
     # datacoredb:
