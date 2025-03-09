@@ -114,8 +114,8 @@ services:
 
         container_name: DCBetaSite
         volumes:
-            - betabuild:/betabuild:rw
-        profiles: [ "beta-build", "all", "website", "fullstack" ]
+            - betabuild:/sitebuild:rw
+        profiles: [ "beta-build" ]
 
     asset-server:
         image: datacore/asset-server
