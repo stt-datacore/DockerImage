@@ -1,5 +1,6 @@
 FROM node:18-alpine
 ARG SSH_KEY
+ARG WEBSITE_BRANCH
 ARG UTILS_REPO
 ARG UTILS_BRANCH
 ARG UTILS2_REPO
@@ -12,18 +13,14 @@ COPY --from=ssh_path . .
 RUN apk add bash python3 build-base git openssh
 RUN git config --global user.email "invalid@email.address"
 RUN git config --global user.name "utility user"
-RUN mkdir /website
-WORKDIR /website
-COPY --from=website . .
-RUN yarn install
 WORKDIR /
+RUN GIT_SSH_COMMAND='ssh -i /root/.ssh/${SSH_KEY} -o IdentitiesOnly=yes' git clone https://github.com/stt-datacore/website.git --branch ${WEBSITE_BRANCH} --single-branch --depth 1
 RUN GIT_SSH_COMMAND='ssh -i /root/.ssh/${SSH_KEY} -o IdentitiesOnly=yes' git clone ${UTILS_REPO}
 RUN mv /${UTILS_DIR} /utils
 WORKDIR /utils
 RUN git checkout ${UTILS_BRANCH}
 RUN git config core.sshCommand 'ssh -i /root/.ssh/${SSH_KEY}'
 RUN npm install
-RUN npm run build
 WORKDIR /
 RUN GIT_SSH_COMMAND='ssh -i /root/.ssh/${SSH_KEY} -o IdentitiesOnly=yes' git clone ${UTILS2_REPO}
 RUN mv /${UTILS2_DIR} /utils2

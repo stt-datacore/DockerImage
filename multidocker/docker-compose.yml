@@ -23,7 +23,6 @@ volumes:
     site-logs:
     bot-logs:
     datacore-mongo:
-    website-code:
     sqlite:
         driver: local
         driver_opts:
@@ -89,7 +88,6 @@ services:
 
         container_name: DCWebsite
         volumes:
-            - website-code:/app:rw
             - sitebuild:/sitebuild:rw
         profiles: [ "website-build", "all", "asset-server", "website", "fullstack", "full-stack" ]
 
@@ -99,9 +97,9 @@ services:
             context: contexts/asset-server
             additional_contexts:
                 source: https://github.com/stt-datacore/asset-server.git#${ASSET_BRANCH}
-                website: https://github.com/stt-datacore/website.git#${WEBSITE_BRANCH}
                 ssh_path: ${UTILS_SSH_PATH}
             args:
+                WEBSITE_BRANCH: ${WEBSITE_BRANCH}
                 ALPINE_VERSION: ${ALPINE_VERSION}
                 NODE_VERSION: ${NODE_VERSION}
                 SSH_KEY: ${UTILS_KEY_NAME}
@@ -119,7 +117,6 @@ services:
                 condition: on-failure
         volumes:
             - ${UTILS_SSH_PATH}:/root/.ssh
-            - website-code:/website:rw
             - assets:/assets:rw
         environment:
             - OUT_PATH=/assets/
