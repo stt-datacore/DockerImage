@@ -95,7 +95,7 @@ services:
         container_name: DCWebsite
         volumes:
             - sitebuild:/sitebuild:rw
-        profiles: [ "website-build", "all", "website", "fullstack", "full-stack" ]
+        profiles: [ "website-build", "all", "website", "fullstack" ]
 
     beta-site:
         build:
@@ -115,7 +115,7 @@ services:
         container_name: DCBetaSite
         volumes:
             - betabuild:/betabuild:rw
-        profiles: [ "beta-build" ]
+        profiles: [ "beta-build", "all", "website", "fullstack" ]
 
     asset-server:
         image: datacore/asset-server
