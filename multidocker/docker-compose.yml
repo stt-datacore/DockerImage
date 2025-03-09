@@ -5,6 +5,12 @@ volumes:
             type: ext4
             o: bind
             device: ${WEBSITE_FOLDER}
+    betabuild:
+        driver: local
+        driver_opts:
+            type: ext4
+            o: bind
+            device: ${BETA_FOLDER}
     config:
     assets:
         driver: local
@@ -89,7 +95,27 @@ services:
         container_name: DCWebsite
         volumes:
             - sitebuild:/sitebuild:rw
-        profiles: [ "website-build", "all", "asset-server", "website", "fullstack", "full-stack" ]
+        profiles: [ "website-build", "all", "website", "fullstack" ]
+
+    beta-site:
+        build:
+            context: contexts/beta-site
+            additional_contexts:
+                source: https://github.com/stt-datacore/website.git#${BETA_BRANCH}
+            args:
+                ALPINE_VERSION: ${ALPINE_VERSION}
+                NODE_VERSION: ${NODE_VERSION}
+        env_file:
+            - .env
+            - ./conf/website.env
+        deploy:
+            restart_policy:
+                condition: on-failure
+
+        container_name: DCBetaSite
+        volumes:
+            - betabuild:/betabuild:rw
+        profiles: [ "beta-build", "all", "website", "fullstack" ]
 
     asset-server:
         image: datacore/asset-server
@@ -177,6 +203,7 @@ services:
             - "443:443"
         volumes:
             - sitebuild:/sitebuild:ro
+            - betabuild:/betabuild:ro
             - assets:/assets:ro
             - profiles:/profiles:ro
             - ${NGINX_EXTRA}:/data:ro
