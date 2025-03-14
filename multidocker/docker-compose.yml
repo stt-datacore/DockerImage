@@ -183,6 +183,7 @@ services:
         deploy:
             restart_policy:
                 condition: on-failure
+        restart: always
         ports:
             - "80:80"
             - "443:443"
