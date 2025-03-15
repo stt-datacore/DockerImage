@@ -49,7 +49,7 @@ WORKDIR /
 RUN GIT_SSH_COMMAND='ssh -i /root/.ssh/${SSH_KEY} -o IdentitiesOnly=yes' git clone ${UTILS3_REPO}
 RUN mv /${UTILS3_DIR} /utils3
 WORKDIR /utils3
-RUN git checkout ${UTILS2_BRANCH}
+RUN git checkout ${UTILS3_BRANCH}
 RUN git config core.sshCommand 'ssh -i /root/.ssh/${SSH_KEY}'
 
 RUN mkdir /app
