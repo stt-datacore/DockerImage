@@ -129,12 +129,18 @@ services:
                 ALPINE_VERSION: ${ALPINE_VERSION}
                 NODE_VERSION: ${NODE_VERSION}
                 SSH_KEY: ${UTILS_KEY_NAME}
+                # Utils
                 UTILS_REPO: ${UTILS_REPO}
                 UTILS_BRANCH: ${UTILS_BRANCH}
                 UTILS_DIR: ${UTILS_DIR}
+                # Utils 2
                 UTILS2_REPO: ${UTILS2_REPO}
                 UTILS2_BRANCH: ${UTILS2_BRANCH}
                 UTILS2_DIR: ${UTILS2_DIR}
+                # Utils 3
+                UTILS3_REPO: ${UTILS3_REPO}
+                UTILS3_BRANCH: ${UTILS3_BRANCH}
+                UTILS3_DIR: ${UTILS3_DIR}
             ssh:
                 "default": ${UTILS_SSH_PATH}/${UTILS_KEY_NAME}
         container_name: DCAssetServer
