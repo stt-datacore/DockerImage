@@ -8,4 +8,4 @@ COPY --from=source package.json package-lock.json ./
 RUN npm install
 COPY --from=source . .
 RUN npm run build
-CMD crond -f -l 8
+CMD /app/exec.sh && crond -f -l 8
