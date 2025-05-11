@@ -56,7 +56,7 @@ RUN mkdir /app
 
 WORKDIR /app
 
-RUN echo */30 * * * * /app/utils_exec.sh > crontab
+RUN echo */5 * * * * /app/utils_exec.sh > crontab
 RUN crontab ./crontab
 
 COPY --from=source package.json package-lock.json ./
