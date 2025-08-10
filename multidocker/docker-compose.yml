@@ -11,6 +11,12 @@ volumes:
             type: ext4
             o: bind
             device: ${BETA_FOLDER}
+    devbuild:
+        driver: local
+        driver_opts:
+            type: ext4
+            o: bind
+            device: ${DEV_FOLDER}
     config:
     assets:
         driver: local
@@ -209,6 +215,7 @@ services:
         volumes:
             - sitebuild:/sitebuild:ro
             - betabuild:/betabuild:ro
+            - devbuild:/devbuild:ro
             - assets:/assets:ro
             - profiles:/profiles:ro
             - ${NGINX_EXTRA}:/data:ro
