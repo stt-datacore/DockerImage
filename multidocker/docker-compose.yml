@@ -159,6 +159,7 @@ services:
             # - sitebuild:/website:ro
         environment:
             - OUT_PATH=/assets/
+            - STATIC_PATH=../website/structured
             - ASSET_ENV=${ASSET_ENV}
         env_file:
             - ./conf/assets.env
