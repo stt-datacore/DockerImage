@@ -142,6 +142,7 @@ services:
             - sitebuild:/website:ro
         environment:
             - OUT_PATH=/assets/
+            - STATIC_PATH=../website/structured
             - ASSET_ENV=${ASSET_ENV}
         profiles: [ "all", "asset-server", "website", "fullstack" ]
 
