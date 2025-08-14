@@ -156,6 +156,7 @@ services:
         volumes:
             - ${UTILS_SSH_PATH}:/root/.ssh
             - assets:/assets:rw
+            - sitebuild:/website:ro
         environment:
             - OUT_PATH=/assets/
             - ASSET_ENV=${ASSET_ENV}
