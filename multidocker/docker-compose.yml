@@ -139,6 +139,7 @@ services:
                 condition: on-failure
         volumes:
             - assets:/assets:rw
+            - sitebuild:/website:ro
         environment:
             - OUT_PATH=/assets/
             - ASSET_ENV=${ASSET_ENV}
