@@ -20,6 +20,7 @@ RUN mkdir /root/.ssh
 WORKDIR /root/.ssh
 COPY --from=ssh_path . .
 RUN apk add bash python3 build-base git openssh
+RUN apk add --no-cache git openssl openssh
 RUN git config --global user.email "invalid@email.address"
 RUN git config --global user.name "utility user"
 
