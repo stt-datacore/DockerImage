@@ -1,6 +1,6 @@
 ARG NODE_VERSION
 ARG ALPINE_VERSION
-FROM node:$NODE_VERSION-alpine$ALPINE_VERSION
+FROM node:22-alpine
 RUN apk add build-base python3 git rsync
 WORKDIR /app
 # Sentry requires the github sha
