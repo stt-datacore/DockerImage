@@ -10,4 +10,8 @@ RUN yarn install
 RUN npx update-browserslist-db@latest
 COPY --from=source . .
 
-CMD yarn run build && rsync -ru --delete-after /app/public/ /sitebuild/
+# For Gatsby Builds
+# CMD yarn run build && rsync --delete -ru --delete-after /app/public/ /sitebuild/
+
+# For CRA Builds
+CMD npm run build && rsync --delete -ru --delete-after /app/build/ /sitebuild/
