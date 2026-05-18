@@ -26,7 +26,7 @@ RUN git config --global user.name "utility user"
 
 WORKDIR /
 
-RUN GIT_SSH_COMMAND='ssh -i /root/.ssh/${SSH_KEY} -o IdentitiesOnly=yes' git clone https://github.com/stt-datacore/website.git --branch master --single-branch --depth 1
+RUN GIT_SSH_COMMAND='ssh -i /root/.ssh/${SSH_KEY} -o IdentitiesOnly=yes' git clone https://github.com/stt-datacore/website.git --branch ${WEBSITE_BRANCH} --single-branch --depth 1
 
 RUN GIT_SSH_COMMAND='ssh -i /root/.ssh/${SSH_KEY} -o IdentitiesOnly=yes' git clone ${UTILS_REPO}
 RUN mv /${UTILS_DIR} /utils
