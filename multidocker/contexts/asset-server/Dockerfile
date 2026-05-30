@@ -67,4 +67,4 @@ COPY --from=source . .
 RUN npm run build
 
 # CMD /app/utils_exec.sh --first && crond -f -l 8
-CMD /app/utils_minor.sh; crond -f -l 8
+CMD /utils/utils_minor.sh; crond -f -l 8
