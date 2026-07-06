@@ -1,5 +1,5 @@
 FROM datacore/pm2-discord AS development
-RUN apt-get install -y sqlite3
+RUN apt-get install sqlite3
 RUN mkdir /app
 WORKDIR /app
 COPY --from=source package.json package-lock.json ./
