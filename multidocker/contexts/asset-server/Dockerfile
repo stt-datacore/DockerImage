@@ -26,7 +26,7 @@ RUN git config --global user.name "utility user"
 
 WORKDIR /
 
-RUN GIT_SSH_COMMAND='ssh -i /root/.ssh/${SSH_KEY} -o IdentitiesOnly=yes' git clone https://github.com/stt-datacore/website.git --branch ${WEBSITE_BRANCH} --single-branch --depth 1
+RUN GIT_SSH_COMMAND='ssh -i /root/.ssh/${SSH_KEY} -o IdentitiesOnly=yes' git clone https://github.com/stt-datacore/website.git#dev --branch ${WEBSITE_BRANCH} --single-branch --depth 1
 
 RUN GIT_SSH_COMMAND='ssh -i /root/.ssh/${SSH_KEY} -o IdentitiesOnly=yes' git clone ${UTILS_REPO}
 RUN mv /${UTILS_DIR} /utils
@@ -67,4 +67,4 @@ COPY --from=source . .
 RUN npm run build
 
 # CMD /app/utils_exec.sh --first && crond -f -l 8
-CMD /utils/utils_minor.sh; crond -f -l 8
+CMD /utils/utils_major.sh; crond -f -l 8
