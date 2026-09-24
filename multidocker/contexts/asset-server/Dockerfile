@@ -1,4 +1,5 @@
-FROM node:22-alpine
+FROM datacore/pm2-discord
+# FROM node:22-alpine
 
 ARG SSH_KEY
 ARG WEBSITE_BRANCH
