@@ -26,7 +26,7 @@ RUN git config --global user.name "utility user"
 
 WORKDIR /
 
-RUN GIT_SSH_COMMAND='ssh -i /root/.ssh/${SSH_KEY} -o IdentitiesOnly=yes' git clone https://github.com/stt-datacore/website.git#dev --branch ${WEBSITE_BRANCH} --single-branch --depth 1
+RUN GIT_SSH_COMMAND='ssh -i /root/.ssh/${SSH_KEY} -o IdentitiesOnly=yes' git clone https://github.com/stt-datacore/website.git --branch ${WEBSITE_BRANCH} --single-branch --depth 1
 
 RUN GIT_SSH_COMMAND='ssh -i /root/.ssh/${SSH_KEY} -o IdentitiesOnly=yes' git clone ${UTILS_REPO}
 RUN mv /${UTILS_DIR} /utils
@@ -34,7 +34,6 @@ WORKDIR /utils
 RUN git checkout ${UTILS_BRANCH}
 RUN git config core.sshCommand 'ssh -i /root/.ssh/${SSH_KEY}'
 RUN npm install
-RUN chmod 777 ./utils_minor.sh
 RUN chmod 777 ./utils_major.sh
 
 WORKDIR /
