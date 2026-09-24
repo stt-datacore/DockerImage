@@ -1,5 +1,4 @@
-FROM datacore/pm2-discord
-# FROM node:22-alpine
+FROM node:22-alpine
 
 ARG SSH_KEY
 ARG WEBSITE_BRANCH
@@ -16,17 +15,12 @@ ARG UTILS3_REPO
 ARG UTILS3_BRANCH
 ARG UTILS3_DIR
 
-# RUN mkdir /root/.ssh
+RUN mkdir /root/.ssh
 
 WORKDIR /root/.ssh
 COPY --from=ssh_path . .
-# RUN apk add bash python3 build-base git openssh
-# RUN apk add --no-cache git openssl openssh
-RUN apt-get update && apt-get -y upgrade
-RUN apt-get install git
-RUN apt-get install build-essential
-# RUN apt-get install openssh
-
+RUN apk add bash python3 build-base git openssh
+RUN apk add --no-cache git openssl openssh
 RUN git config --global user.email "invalid@email.address"
 RUN git config --global user.name "utility user"
 
